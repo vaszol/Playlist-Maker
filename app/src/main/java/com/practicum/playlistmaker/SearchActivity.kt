@@ -13,6 +13,10 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
+    private var searchText: String = SEARCH_TEXT
+    companion object {
+        const val SEARCH_TEXT = ""
+    }
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +31,9 @@ class SearchActivity : AppCompatActivity() {
         val inputEditText = findViewById<EditText>(R.id.inputEditText)
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
 
+        inputEditText.setText(searchText)
         clearButton.setOnClickListener {
-            inputEditText.setText("")
+            inputEditText.setText(searchText)
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -45,6 +50,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                searchText = s.toString()
             }
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
@@ -56,6 +62,18 @@ class SearchActivity : AppCompatActivity() {
         } else {
             View.VISIBLE
         }
+    }
+
+    @SuppressLint("MissingInflatedId")
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_TEXT, searchText)
+    }
+
+    @SuppressLint("MissingInflatedId")
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchText = savedInstanceState.getString(SEARCH_TEXT).toString()
     }
 
 }
