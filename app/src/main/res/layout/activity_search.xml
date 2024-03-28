@@ -24,4 +24,31 @@
             style="@style/ToolbarTextView"
             android:text="@string/menu_search"/>
     </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout style="@style/verticalLinearLayout">
+
+        <LinearLayout
+            android:id="@+id/container"
+            style="@style/verticalLinearLayoutSearch">
+
+            <ImageView
+                android:id="@+id/searchIcon"
+                style="@style/SearchImageView"
+                android:layout_marginStart="@dimen/size_12"
+                android:background="@drawable/search" />
+
+            <EditText
+                android:id="@+id/inputEditText"
+                style="@style/SearchEditText" />
+
+            <ImageView
+                android:id="@+id/clearIcon"
+                style="@style/SearchImageView"
+                android:layout_marginEnd="@dimen/size_12"
+                android:background="@drawable/clear"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 </LinearLayout>
