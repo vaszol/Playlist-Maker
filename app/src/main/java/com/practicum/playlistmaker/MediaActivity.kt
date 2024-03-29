@@ -2,8 +2,8 @@ package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 class MediaActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
@@ -11,9 +11,7 @@ class MediaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media)
 
-        val back = findViewById<ImageView>(R.id.toolbar_back)
-        back.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+        val toolbar = findViewById<Toolbar>(R.id.media_toolbar)
+        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 }

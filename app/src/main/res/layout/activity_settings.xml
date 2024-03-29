@@ -9,20 +9,12 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/settings_toolbar"
-        style="@style/Toolbar">
-
-        <ImageView
-            android:id="@+id/toolbar_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/size_16"
-            android:src="@drawable/arrow" />
-
-        <TextView
-            android:id="@+id/toolbar_title"
-            style="@style/ToolbarTextView"
-            android:text="@string/menu_setting"/>
-    </androidx.appcompat.widget.Toolbar>
+        style="@style/Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/arrow"
+        app:title="@string/menu_setting"
+        app:titleTextColor="@color/toolbarTextMenu" />
 
     <LinearLayout style="@style/verticalLinearLayout">
 
@@ -47,7 +39,6 @@
                 android:id="@+id/setting_share_btn"
                 style="@style/menuImageView"
                 android:src="@drawable/share" />
-
         </FrameLayout>
 
         <FrameLayout style="@style/menuFrameLayout">

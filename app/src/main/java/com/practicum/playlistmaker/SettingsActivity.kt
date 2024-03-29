@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 
 class SettingsActivity : AppCompatActivity(), View.OnClickListener {
@@ -15,10 +16,8 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val back = findViewById<ImageView>(R.id.toolbar_back)
-        back.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
+        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         val settingShare = findViewById<ImageView>(R.id.setting_share_btn)
         settingShare.setOnClickListener(this@SettingsActivity)
@@ -33,22 +32,27 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(p0: View?) {
         when (p0?.id) {
             R.id.setting_share_btn -> {
-                val address = Uri.parse(getString(R.string.android_developer))
-                val openlink = Intent(Intent.ACTION_VIEW, address)
-                startActivity(openlink)
+                Intent(Intent.ACTION_SEND).apply {
+                    type = "plain/text"
+                    putExtra(Intent.EXTRA_TEXT,Uri.parse(getString(R.string.android_developer)))
+                    startActivity(this)
+                }
             }
             R.id.setting_support_btn -> {
-                val email = Intent(Intent.ACTION_SEND)
-                email.setType("plain/text");
-                email.putExtra(Intent.EXTRA_EMAIL,R.string.EXTRA_EMAIL);
-                email.putExtra(Intent.EXTRA_SUBJECT,R.string.EXTRA_SUBJECT);
-                email.putExtra(Intent.EXTRA_TEXT,R.string.EXTRA_TEXT);
-                startActivity(email)
+
+                Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse(getString(R.string.mailto))
+                    putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.EXTRA_EMAIL)))
+                    putExtra(Intent.EXTRA_SUBJECT,getString(R.string.EXTRA_SUBJECT))
+                    putExtra(Intent.EXTRA_TEXT,getString(R.string.EXTRA_TEXT))
+                    startActivity(this)
+                }
             }
             R.id.setting_terms_btn -> {
-                val address = Uri.parse(R.string.practicum_offer.toString())
-                val openlink = Intent(Intent.ACTION_VIEW, address)
-                startActivity(openlink)
+                Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(getString(R.string.practicum_offer))
+                    startActivity(this)
+                }
             }
         }
     }

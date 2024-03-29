@@ -8,6 +8,7 @@
     <string name="setting_support">Написать в поддержку</string>
     <string name="setting_terms">Пользовательское соглашение</string>
     <string name="android_developer">https://practicum.yandex.ru/android-developer/?from=catalog</string>
+    <string name="mailto">mailto:</string>
     <string name="EXTRA_EMAIL">vaszol@yandex.ru</string>
     <string name="EXTRA_SUBJECT">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="EXTRA_TEXT">Спасибо разработчикам и разработчицам за крутое приложение!</string>

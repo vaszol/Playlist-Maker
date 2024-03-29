@@ -11,21 +11,22 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 class SearchActivity : AppCompatActivity() {
-    private var searchText: String = SEARCH_TEXT
+    var searchText: String = ""
+
     companion object {
-        const val SEARCH_TEXT = ""
+        const val SEARCH_TEXT = "SEARCH_TEXT"
     }
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val back = findViewById<ImageView>(R.id.toolbar_back)
-        back.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+        val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
+        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         val linearLayout = findViewById<LinearLayout>(R.id.container)
         val inputEditText = findViewById<EditText>(R.id.inputEditText)
@@ -33,7 +34,10 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.setText(searchText)
         clearButton.setOnClickListener {
-            inputEditText.setText(searchText)
+            inputEditText.setText("")
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(linearLayout.windowToken, 0)
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -42,11 +46,6 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
-                if (s.isNullOrEmpty()) {
-                    val inputMethodManager =
-                        getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                    inputMethodManager?.hideSoftInputFromWindow(linearLayout.windowToken, 0)
-                }
             }
 
             override fun afterTextChanged(s: Editable?) {
