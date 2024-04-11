@@ -2,4 +2,6 @@
 <resources>
     <color name="toolbarTextMein">#FFFFFFFF</color>
     <color name="toolbarTextMenu">#FFFFFF</color>
+    <color name="trackTextPrime">#FFFFFF</color>
+    <color name="trackText">#FFFFFF</color>
 </resources>

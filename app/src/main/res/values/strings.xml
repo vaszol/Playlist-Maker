@@ -14,4 +14,7 @@
     <string name="EXTRA_TEXT">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="practicum_offer">https://yandex.ru/legal/practicum_offer/</string>
     <string name="search_hint">Поиск</string>
+    <string name="track_name">Название композиции</string>
+    <string name="artist_name">Имя исполнителя</string>
+    <string name="track_time">Продолжительность трека</string>
 </resources>
