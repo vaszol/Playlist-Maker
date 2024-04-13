@@ -18,7 +18,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/size_5"
-        android:layout_marginStart="@dimen/size_16"
+        android:layout_marginStart="@dimen/size_8"
+        android:layout_marginEnd="@dimen/size_8"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -31,7 +32,7 @@
             android:textColor="@color/trackTextPrime"
             android:textSize="@dimen/size_16"
             tools:ignore="SpUsage"
-            tools:text="@string/track_name" />
+            tools:text="Название композиции" />
 
 
         <LinearLayout
@@ -46,12 +47,14 @@
                 android:id="@+id/track_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:ellipsize="end"
                 android:fontFamily="@font/ys_display_regular"
+                android:maxLines="1"
                 android:textColor="@color/trackText"
                 android:textSize="@dimen/size_11"
                 tools:ignore="SpUsage"
-                tools:text="@string/artist_name" />
+                tools:text="Имя исполнителя" />
 
             <ImageView
                 android:layout_width="@dimen/size_13"
@@ -67,7 +70,7 @@
                 android:textColor="@color/trackText"
                 android:textSize="@dimen/size_11"
                 tools:ignore="SpUsage"
-                tools:text="@string/track_time" />
+                tools:text="Продолжительность трека" />
         </LinearLayout>
     </LinearLayout>
 
