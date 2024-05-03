@@ -7,4 +7,6 @@
     <color name="gray_dark">#818C99</color>
     <color name="toolbarTextMein">#FFFFFFFF</color>
     <color name="toolbarTextMenu">#1A1B22</color>
+    <color name="trackTextPrime">#000000</color>
+    <color name="trackText">#AEAFB4</color>
 </resources>
