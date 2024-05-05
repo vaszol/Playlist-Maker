@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.itunes.ItunesAdapter
+import com.practicum.playlistmaker.itunes.TracksAdapter
 import com.practicum.playlistmaker.itunes.ItunesApiService
 import com.practicum.playlistmaker.itunes.ItunesResponse
 import retrofit2.Call
@@ -64,6 +64,7 @@ class SearchActivity : AppCompatActivity() {
             false
         }
         clearButton?.setOnClickListener {
+            recyclerView?.adapter = TracksAdapter()
             inputEditText?.setText("")
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -87,28 +88,27 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search() {
-        recyclerView?.adapter = ItunesAdapter()
+        recyclerView?.adapter = TracksAdapter()
         ItunesApiService.build.search(inputEditText?.text.toString())
             .enqueue(object : Callback<ItunesResponse> {
                 override fun onResponse(
                     call: Call<ItunesResponse>,
                     response: Response<ItunesResponse>
                 ) {
-                    when (response.code()) {
-                        200 -> {
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                messageOk()
-                                val adapter = ItunesAdapter()
-                                recyclerView?.layoutManager =
-                                    LinearLayoutManager(this@SearchActivity)
-                                recyclerView?.adapter = adapter
-                                adapter.updateList(response.body()?.results!!)
-                            } else {
-                                messageEmpty()
-                            }
+                    val list = response.body()?.results
+                    if (response.isSuccessful) {
+                        if (list?.isNotEmpty() == true) {
+                            messageOk()
+                            val adapter = TracksAdapter()
+                            recyclerView?.layoutManager =
+                                LinearLayoutManager(this@SearchActivity)
+                            recyclerView?.adapter = adapter
+                            adapter.updateList(list)
+                        } else {
+                            messageEmpty()
                         }
-
-                        else -> messageFail()
+                    } else {
+                        messageFail()
                     }
                 }
 

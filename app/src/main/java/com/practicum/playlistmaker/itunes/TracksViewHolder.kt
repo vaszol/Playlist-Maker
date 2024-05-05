@@ -12,7 +12,7 @@ import com.practicum.playlistmaker.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ItunesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val trackImg: ImageView = itemView.findViewById(R.id.track_img)
     private val trackName: TextView = itemView.findViewById(R.id.track_name)

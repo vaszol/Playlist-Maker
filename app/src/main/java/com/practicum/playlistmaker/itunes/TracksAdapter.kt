@@ -1,19 +1,20 @@
 package com.practicum.playlistmaker.itunes
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 
-class ItunesAdapter() : RecyclerView.Adapter<ItunesViewHolder>() {
+class TracksAdapter : RecyclerView.Adapter<TracksViewHolder>() {
 
     private var list: List<ItunesResult> = emptyList()
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItunesViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false)
-        return ItunesViewHolder(view)
+        return TracksViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ItunesViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(list[position])
     }
 
@@ -21,13 +22,9 @@ class ItunesAdapter() : RecyclerView.Adapter<ItunesViewHolder>() {
         return list.size
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateList(list: List<ItunesResult>) {
         this.list = list
-        notifyDataSetChanged()
-    }
-
-    fun clear() {
-        list = emptyList()
         notifyDataSetChanged()
     }
 
