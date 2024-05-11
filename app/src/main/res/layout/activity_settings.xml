@@ -25,6 +25,7 @@
                 android:text="@string/setting_theme" />
 
             <Switch
+                android:id="@+id/setting_theme_switch"
                 style="@style/menuImageView"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
         </FrameLayout>
