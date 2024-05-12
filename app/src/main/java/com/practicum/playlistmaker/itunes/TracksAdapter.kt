@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 
 class TracksAdapter : RecyclerView.Adapter<TracksViewHolder>() {
@@ -16,6 +17,9 @@ class TracksAdapter : RecyclerView.Adapter<TracksViewHolder>() {
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(list[position])
+        holder.itemView.setOnClickListener {
+            (holder.itemView.context.applicationContext as App).addHistory(list[position])
+        }
     }
 
     override fun getItemCount(): Int {
