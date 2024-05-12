@@ -4,4 +4,7 @@
     <color name="toolbarTextMenu">#FFFFFF</color>
     <color name="trackTextPrime">#FFFFFF</color>
     <color name="trackText">#FFFFFF</color>
+    <color name="messageText">#FFFFFF</color>
+    <color name="message_btn">#FFFFFF</color>
+    <color name="message_btn_text">#1A1B22</color>
 </resources>

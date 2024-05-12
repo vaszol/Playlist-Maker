@@ -9,4 +9,7 @@
     <color name="toolbarTextMenu">#1A1B22</color>
     <color name="trackTextPrime">#000000</color>
     <color name="trackText">#AEAFB4</color>
+    <color name="messageText">#1A1B22</color>
+    <color name="message_btn">#1A1B22</color>
+    <color name="message_btn_text">#FFFFFF</color>
 </resources>

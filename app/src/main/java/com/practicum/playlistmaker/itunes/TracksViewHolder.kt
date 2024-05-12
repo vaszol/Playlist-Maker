@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.itunes
 
 import android.content.Context
 import android.util.TypedValue
@@ -8,6 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.R
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -16,7 +19,7 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackArtist: TextView = itemView.findViewById(R.id.track_artist)
     private val trackTime: TextView = itemView.findViewById(R.id.track_time)
 
-    fun bind(model: Track) {
+    fun bind(model: ItunesResult) {
         Glide.with(trackImg)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.ic_music)
@@ -26,7 +29,9 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .into(trackImg)
         trackName.text = model.trackName
         trackArtist.text = model.artistName
-        trackTime.text = model.trackTime
+        trackTime.text =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
+
     }
 
     private fun dpToPx(dp: Float, context: Context): Int {
@@ -36,5 +41,4 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             context.resources.displayMetrics
         ).toInt()
     }
-
 }
