@@ -17,4 +17,6 @@
     <string name="message_fail">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="message_empty">Ничего не нашлось</string>
     <string name="update">Обновить</string>
+    <string name="search_history">Вы искали</string>
+    <string name="search_history_btn">Очистить историю</string>
 </resources>

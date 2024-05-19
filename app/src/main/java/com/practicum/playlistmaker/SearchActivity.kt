@@ -18,9 +18,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.itunes.TracksAdapter
 import com.practicum.playlistmaker.itunes.ItunesApiService
 import com.practicum.playlistmaker.itunes.ItunesResponse
+import com.practicum.playlistmaker.itunes.SearchHistoryAdapter
+import com.practicum.playlistmaker.itunes.TracksAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +37,8 @@ class SearchActivity : AppCompatActivity() {
     private var messageImg: ImageView? = null
     private var messageText: TextView? = null
     private var messageBtn: Button? = null
+    private var searchHistory: TextView? = null
+    private var searchHistoryBtn: Button? = null
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
@@ -54,6 +57,8 @@ class SearchActivity : AppCompatActivity() {
         messageImg = findViewById(R.id.message_img)
         messageText = findViewById(R.id.message_text)
         messageBtn = findViewById(R.id.message_btn)
+        searchHistory = findViewById(R.id.search_history)
+        searchHistoryBtn = findViewById(R.id.search_history_btn)
 
         toolbar?.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
         inputEditText?.setText(searchText)
@@ -78,6 +83,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton?.visibility = clearButtonVisibility(s)
+                if (inputEditText?.hasFocus() == true && s?.isEmpty() == true) showHistory() else goneHistory()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -85,9 +91,18 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         inputEditText?.addTextChangedListener(simpleTextWatcher)
+        inputEditText?.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && inputEditText?.text!!.isEmpty()) showHistory() else goneHistory()
+        }
+        searchHistoryBtn?.setOnClickListener {
+            (applicationContext as App).clearHistory()
+            goneHistory()
+        }
+        showHistory()
     }
 
     private fun search() {
+        goneHistory()
         recyclerView?.adapter = TracksAdapter()
         ItunesApiService.build.search(inputEditText?.text.toString())
             .enqueue(object : Callback<ItunesResponse> {
@@ -147,6 +162,23 @@ class SearchActivity : AppCompatActivity() {
         messageImg?.visibility = View.INVISIBLE
         messageBtn?.visibility = View.INVISIBLE
         messageText?.text = ""
+    }
+
+    private fun showHistory() {
+        messageOk()
+        val searchAdapter = SearchHistoryAdapter(this@SearchActivity)
+        recyclerView?.layoutManager = LinearLayoutManager(this@SearchActivity)
+        recyclerView?.adapter = searchAdapter
+        if (searchAdapter.itemCount != 0) {
+            searchHistory?.visibility = View.VISIBLE
+            searchHistoryBtn?.visibility = View.VISIBLE
+        }
+    }
+
+    private fun goneHistory() {
+        searchHistory?.visibility = View.GONE
+        searchHistoryBtn?.visibility = View.GONE
+        recyclerView?.visibility = View.GONE
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
