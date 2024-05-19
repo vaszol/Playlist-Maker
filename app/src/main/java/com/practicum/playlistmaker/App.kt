@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.itunes.ItunesResult
+import com.practicum.playlistmaker.itunes.Track
 
 const val APP_PREFERENCES = "app_preferences"
 const val DARK_THEME_KEY = "dark_theme_key"
@@ -40,18 +40,18 @@ class App : Application() {
             ?.apply()
     }
 
-    fun getFromHistory(): MutableList<ItunesResult> {
+    fun getFromHistory(): MutableList<Track> {
         val json = sharedPrefs?.getString(SEARCH_HISTORY, "")
         if (json.isNullOrEmpty()) {
             return mutableListOf()
         } else {
-            val itemType = object : TypeToken<List<ItunesResult>>() {}.type
+            val itemType = object : TypeToken<List<Track>>() {}.type
             return Gson().fromJson(json, itemType)
         }
     }
 
-    fun addHistory(item: ItunesResult) {
-        val history: MutableList<ItunesResult> = getFromHistory()
+    fun addHistory(item: Track) {
+        val history: MutableList<Track> = getFromHistory()
         if (history.isNotEmpty()) {
             if (history.any { it.trackId == item.trackId }) {
                 history.remove(item)

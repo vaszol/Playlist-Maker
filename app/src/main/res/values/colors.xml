@@ -12,4 +12,8 @@
     <color name="messageText">#1A1B22</color>
     <color name="message_btn">#1A1B22</color>
     <color name="message_btn_text">#FFFFFF</color>
+    <color name="media_text">#1A1B22</color>
+    <color name="media_text_info">#AEAFB4</color>
+    <color name="round_btn">#1A1B22</color>
+    <color name="play_btn">#1A1B22</color>
 </resources>

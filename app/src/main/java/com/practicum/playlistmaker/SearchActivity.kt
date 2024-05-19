@@ -69,7 +69,7 @@ class SearchActivity : AppCompatActivity() {
             false
         }
         clearButton?.setOnClickListener {
-            recyclerView?.adapter = TracksAdapter()
+            recyclerView?.adapter = TracksAdapter(this@SearchActivity)
             inputEditText?.setText("")
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -103,7 +103,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun search() {
         goneHistory()
-        recyclerView?.adapter = TracksAdapter()
+        recyclerView?.adapter = TracksAdapter(this@SearchActivity)
         ItunesApiService.build.search(inputEditText?.text.toString())
             .enqueue(object : Callback<ItunesResponse> {
                 override fun onResponse(
@@ -114,7 +114,7 @@ class SearchActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         if (list?.isNotEmpty() == true) {
                             messageOk()
-                            val adapter = TracksAdapter()
+                            val adapter = TracksAdapter(this@SearchActivity)
                             recyclerView?.layoutManager =
                                 LinearLayoutManager(this@SearchActivity)
                             recyclerView?.adapter = adapter

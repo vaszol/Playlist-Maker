@@ -31,9 +31,9 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         settingTerms = findViewById(R.id.setting_terms_btn)
 
         toolbar?.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
-        themeSwitcher?.setOnCheckedChangeListener(null);
-        themeSwitcher?.setChecked((applicationContext as App).getThemePreferences());
-        themeSwitcher?.setOnCheckedChangeListener { switcher, checked ->
+        themeSwitcher?.setOnCheckedChangeListener(null)
+        themeSwitcher?.isChecked = (applicationContext as App).getThemePreferences()
+        themeSwitcher?.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
         }
         settingShare?.setOnClickListener(this@SettingsActivity)
