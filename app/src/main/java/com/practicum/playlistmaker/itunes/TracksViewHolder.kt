@@ -19,7 +19,7 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackArtist: TextView = itemView.findViewById(R.id.track_artist)
     private val trackTime: TextView = itemView.findViewById(R.id.track_time)
 
-    fun bind(model: ItunesResult) {
+    fun bind(model: Track) {
         Glide.with(trackImg)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.ic_music)
