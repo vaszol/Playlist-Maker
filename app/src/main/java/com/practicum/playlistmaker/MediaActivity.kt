@@ -57,7 +57,7 @@ class MediaActivity : AppCompatActivity() {
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
         if (track.collectionName.isNullOrEmpty()) infoTrackCollectionGroup?.visibility = View.GONE
         track.collectionName.also { infoTrackCollection?.text = it }
-        infoTrackReleaseDate?.text = track.releaseDate
+        infoTrackReleaseDate?.text = track.getYear()
         infoTrackGenre?.text = track.primaryGenreName
         infoTrackCountry?.text = track.country
     }
