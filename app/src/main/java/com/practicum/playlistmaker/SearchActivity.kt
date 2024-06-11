@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.practicum.playlistmaker.itunes.ItunesApiService
 import com.practicum.playlistmaker.itunes.ItunesResponse
 import com.practicum.playlistmaker.itunes.SearchHistoryAdapter
@@ -117,7 +119,7 @@ class SearchActivity : AppCompatActivity() {
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    fun clickDebounce(): Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
@@ -196,7 +198,13 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showHistory() {
         messageOk()
-        val searchAdapter = SearchHistoryAdapter(this@SearchActivity)
+        val searchAdapter = SearchHistoryAdapter(this@SearchActivity) {
+            if (clickDebounce()) {
+                val intent = Intent(this, MediaActivity::class.java)
+                intent.putExtra("track", Gson().toJson(it))
+                startActivity(intent)
+            }
+        }
         recyclerView?.layoutManager = LinearLayoutManager(this@SearchActivity)
         recyclerView?.adapter = searchAdapter
         if (searchAdapter.itemCount != 0) {
