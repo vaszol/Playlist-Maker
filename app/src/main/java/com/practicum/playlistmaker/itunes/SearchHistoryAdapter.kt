@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.MediaActivity
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.SearchActivity
 
 class SearchHistoryAdapter(private val context: Context) :
     RecyclerView.Adapter<TracksViewHolder>() {
@@ -25,9 +26,11 @@ class SearchHistoryAdapter(private val context: Context) :
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(list[position])
         holder.itemView.setOnClickListener {
-            val intent = Intent(context, MediaActivity::class.java)
-            intent.putExtra("track", Gson().toJson(list[position]))
-            context.startActivity(intent)
+            if ((context as SearchActivity).clickDebounce()) {
+                val intent = Intent(context, MediaActivity::class.java)
+                intent.putExtra("track", Gson().toJson(list[position]))
+                context.startActivity(intent)
+            }
         }
     }
 }

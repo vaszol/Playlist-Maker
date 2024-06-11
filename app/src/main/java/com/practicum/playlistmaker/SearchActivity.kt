@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,6 +15,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -28,6 +31,9 @@ import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
     var searchText: String = ""
+    private val searchRunnable = Runnable { search() }
+    private val handler = Handler(Looper.getMainLooper())
+    private var isClickAllowed = true
 
     private var toolbar: Toolbar? = null
     private var linearLayout: LinearLayout? = null
@@ -39,9 +45,12 @@ class SearchActivity : AppCompatActivity() {
     private var messageBtn: Button? = null
     private var searchHistory: TextView? = null
     private var searchHistoryBtn: Button? = null
+    private var searchPgb: ProgressBar? = null
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
     @SuppressLint("MissingInflatedId")
@@ -59,6 +68,7 @@ class SearchActivity : AppCompatActivity() {
         messageBtn = findViewById(R.id.message_btn)
         searchHistory = findViewById(R.id.search_history)
         searchHistoryBtn = findViewById(R.id.search_history_btn)
+        searchPgb = findViewById(R.id.search_pgb)
 
         toolbar?.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
         inputEditText?.setText(searchText)
@@ -84,6 +94,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton?.visibility = clearButtonVisibility(s)
                 if (inputEditText?.hasFocus() == true && s?.isEmpty() == true) showHistory() else goneHistory()
+                searchDebounce()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -99,6 +110,22 @@ class SearchActivity : AppCompatActivity() {
             goneHistory()
         }
         showHistory()
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true },
+                CLICK_DEBOUNCE_DELAY
+            )
+        }
+        return current
     }
 
     private fun search() {
@@ -138,6 +165,7 @@ class SearchActivity : AppCompatActivity() {
         messageImg?.visibility = View.VISIBLE
         messageText?.visibility = View.VISIBLE
         messageBtn?.visibility = View.VISIBLE
+        searchPgb?.visibility = View.GONE
         messageImg?.setImageResource(
             if (Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) R.drawable.ic_message_fail_dark
             else R.drawable.ic_message_fail
@@ -150,6 +178,7 @@ class SearchActivity : AppCompatActivity() {
         messageImg?.visibility = View.VISIBLE
         messageText?.visibility = View.VISIBLE
         messageBtn?.visibility = View.INVISIBLE
+        searchPgb?.visibility = View.GONE
         messageImg?.setImageResource(
             if (Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) R.drawable.ic_message_empty_dark
             else R.drawable.ic_message_empty
@@ -161,6 +190,7 @@ class SearchActivity : AppCompatActivity() {
         recyclerView?.visibility = View.VISIBLE
         messageImg?.visibility = View.INVISIBLE
         messageBtn?.visibility = View.INVISIBLE
+        searchPgb?.visibility = View.GONE
         messageText?.text = ""
     }
 
@@ -179,6 +209,9 @@ class SearchActivity : AppCompatActivity() {
         searchHistory?.visibility = View.GONE
         searchHistoryBtn?.visibility = View.GONE
         recyclerView?.visibility = View.GONE
+        messageImg?.visibility = View.GONE
+        messageText?.visibility = View.GONE
+        searchPgb?.visibility = View.VISIBLE
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
