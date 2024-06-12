@@ -1,16 +1,13 @@
 package com.practicum.playlistmaker.itunes
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import com.practicum.playlistmaker.App
-import com.practicum.playlistmaker.MediaActivity
 import com.practicum.playlistmaker.R
 
-class SearchHistoryAdapter(private val context: Context) :
+class SearchHistoryAdapter(context: Context, private val clickListener: ClickListener) :
     RecyclerView.Adapter<TracksViewHolder>() {
     private var list: List<Track> = (context.applicationContext as App).getFromHistory().reversed()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
@@ -24,10 +21,10 @@ class SearchHistoryAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(list[position])
-        holder.itemView.setOnClickListener {
-            val intent = Intent(context, MediaActivity::class.java)
-            intent.putExtra("track", Gson().toJson(list[position]))
-            context.startActivity(intent)
-        }
+        holder.itemView.setOnClickListener { clickListener.onClick(list[position]) }
+    }
+
+    fun interface ClickListener {
+        fun onClick(track: Track)
     }
 }
