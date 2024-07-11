@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.itunes
+package com.practicum.playlistmaker.domain.models
 
 import java.time.format.DateTimeFormatter
 
@@ -14,7 +14,6 @@ data class Track(
     val country: String,
     val previewUrl: String
 ) {
-    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
     fun getYear(): String? = DateTimeFormatter
         .ofPattern("yyyy").format(
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(releaseDate)
