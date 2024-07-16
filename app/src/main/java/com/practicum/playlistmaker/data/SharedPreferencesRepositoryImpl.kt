@@ -1,18 +1,21 @@
 package com.practicum.playlistmaker.data
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.domain.api.SharedPreferencesRepository
 import com.practicum.playlistmaker.domain.models.Track
 
-class SharedPreferencesRepositoryImpl : SharedPreferencesRepository {
+class SharedPreferencesRepositoryImpl(
+    private val sharedPreferences: SharedPreferences
+) : SharedPreferencesRepository {
 
-    override fun addHistory(context: Context, track: Track) {
-        val history: MutableList<Track> = getFromHistory(context)
+    @SuppressLint("CommitPrefEdits")
+    override fun addHistory(track: Track) {
+        val history: MutableList<Track> = getFromHistory()
         if (history.isNotEmpty()) {
             if (history.any { it.trackId == track.trackId }) {
                 history.remove(track)
@@ -21,13 +24,11 @@ class SharedPreferencesRepositoryImpl : SharedPreferencesRepository {
             }
         }
         history.add(track)
-        getSharedPreferences(context).edit()
-            .putString(SEARCH_HISTORY, Gson().toJson(history))
-            .apply()
+        sharedPreferences.edit { putString(SEARCH_HISTORY, Gson().toJson(history)) }
     }
 
-    override fun getFromHistory(context: Context): MutableList<Track> {
-        val json = getSharedPreferences(context).getString(SEARCH_HISTORY, "")
+    override fun getFromHistory(): MutableList<Track> {
+        val json = sharedPreferences.getString(SEARCH_HISTORY, "")
         if (json.isNullOrEmpty()) {
             return mutableListOf()
         } else {
@@ -36,23 +37,17 @@ class SharedPreferencesRepositoryImpl : SharedPreferencesRepository {
         }
     }
 
-    override fun getSharedPreferences(context: Context): SharedPreferences {
-        val prefData: SharedPreferences = context.getSharedPreferences(
-            APP_PREFERENCES,
-            AppCompatActivity.MODE_PRIVATE
-        )
-        return prefData
+    @SuppressLint("CommitPrefEdits")
+    override fun clearSharedPreference() {
+        sharedPreferences.edit { putString(SEARCH_HISTORY, "") }
     }
 
-    override fun clearSharedPreference(context: Context) {
-        getSharedPreferences(context).edit().putString(SEARCH_HISTORY, "").apply()
+    override fun getThemePreferences(darkTheme: Boolean): Boolean {
+        return sharedPreferences.getBoolean(DARK_THEME_KEY, darkTheme)
     }
 
-    override fun getThemePreferences(context: Context, darkTheme: Boolean): Boolean {
-        return getSharedPreferences(context).getBoolean(DARK_THEME_KEY, darkTheme)
-    }
-
-    override fun switchTheme(context: Context, darkTheme: Boolean) {
+    @SuppressLint("CommitPrefEdits")
+    override fun switchTheme(darkTheme: Boolean) {
         AppCompatDelegate.setDefaultNightMode(
             if (darkTheme) {
                 AppCompatDelegate.MODE_NIGHT_YES
@@ -60,11 +55,10 @@ class SharedPreferencesRepositoryImpl : SharedPreferencesRepository {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-        getSharedPreferences(context).edit().putBoolean(DARK_THEME_KEY, darkTheme).apply()
+        sharedPreferences.edit { putBoolean(DARK_THEME_KEY, darkTheme) }
     }
 
     companion object {
-        private const val APP_PREFERENCES = "app_preferences"
         private const val SEARCH_HISTORY = "search_history_key"
         private const val DARK_THEME_KEY = "dark_theme_key"
     }

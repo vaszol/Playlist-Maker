@@ -1,17 +1,17 @@
 package com.practicum.playlistmaker.ui.settings
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
-import com.practicum.playlistmaker.domain.Creator
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
-class SettingsActivity : AppCompatActivity(), View.OnClickListener {
+class SettingsActivity : AppCompatActivity() {
     private lateinit var settingsBinding: ActivitySettingsBinding
-    private var creator = Creator.provideIntentActionInteractor()
 
     @SuppressLint("WrongViewCast", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,16 +26,27 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         settingsBinding.settingThemeSwitch.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
         }
-        settingsBinding.settingShareBtn.setOnClickListener(this@SettingsActivity)
-        settingsBinding.settingSupportBtn.setOnClickListener(this@SettingsActivity)
-        settingsBinding.settingTermsBtn.setOnClickListener(this@SettingsActivity)
-    }
-
-    override fun onClick(p0: View?) {
-        when (p0) {
-            settingsBinding.settingShareBtn -> creator.send(this)
-            settingsBinding.settingSupportBtn -> creator.sendTo(this)
-            settingsBinding.settingTermsBtn -> creator.view(this)
+        settingsBinding.settingShareBtn.setOnClickListener {
+            Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.android_developer))
+                startActivity(this)
+            }
+        }
+        settingsBinding.settingSupportBtn.setOnClickListener {
+            Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse(getString(R.string.mailto))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.EXTRA_EMAIL)))
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.EXTRA_SUBJECT))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.EXTRA_TEXT))
+                startActivity(this)
+            }
+        }
+        settingsBinding.settingTermsBtn.setOnClickListener {
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(getString(R.string.practicum_offer))
+                startActivity(this)
+            }
         }
     }
 }

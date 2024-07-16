@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.domain.impl
 
 import android.media.MediaPlayer
-import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityMediaBinding
 import com.practicum.playlistmaker.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 
@@ -15,28 +13,22 @@ class PlayerInteractorlmpl : PlayerInteractor {
             _playerState = value
         }
 
-    override fun pausePlayer(mediaPlayer: MediaPlayer, binding: ActivityMediaBinding) {
+    override fun pausePlayer(mediaPlayer: MediaPlayer) {
         mediaPlayer.pause()
-        binding.playBtn.setImageResource(R.drawable.ic_play)
         playerState = PlayerStateEnum.STATE_PAUSED
     }
 
-    override fun startPlayer(mediaPlayer: MediaPlayer, binding: ActivityMediaBinding) {
+    override fun startPlayer(mediaPlayer: MediaPlayer) {
         if (!mediaPlayer.isPlaying) {
             mediaPlayer.start()
-            binding.playBtn.setImageResource(R.drawable.ic_pause)
             playerState = PlayerStateEnum.STATE_PLAYING
         }
     }
 
-    override fun playbackControl(mediaPlayer: MediaPlayer, binding: ActivityMediaBinding) {
+    override fun playbackControl(mediaPlayer: MediaPlayer) {
         when (playerState) {
-            PlayerStateEnum.STATE_PLAYING -> pausePlayer(mediaPlayer, binding)
-            PlayerStateEnum.STATE_PREPARED, PlayerStateEnum.STATE_PAUSED -> startPlayer(
-                mediaPlayer,
-                binding
-            )
-
+            PlayerStateEnum.STATE_PLAYING -> pausePlayer(mediaPlayer)
+            PlayerStateEnum.STATE_PREPARED, PlayerStateEnum.STATE_PAUSED -> startPlayer(mediaPlayer)
             PlayerStateEnum.STATE_DEFAULT -> {}
             null -> {}
         }

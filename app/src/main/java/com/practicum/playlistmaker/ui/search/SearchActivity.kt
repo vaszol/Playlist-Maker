@@ -7,12 +7,12 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
@@ -25,7 +25,7 @@ import com.practicum.playlistmaker.ui.media.MediaActivity
 
 class SearchActivity : AppCompatActivity() {
     lateinit var searchBinding: ActivitySearchBinding
-    var searchText: String = ""
+    private var searchText: String = ""
     private val searchRunnable = Runnable { search() }
     private val handler = Handler(Looper.getMainLooper())
     private var isClickAllowed = true
@@ -47,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
 
         adapter = TracksAdapter(mutableListOf()) {
             if (clickDebounce()) {
-                sharedPreferences.addHistory(this, it)
+                sharedPreferences.addHistory(it)
                 val intent = Intent(this, MediaActivity::class.java)
                 intent.putExtra("track", Gson().toJson(it))
                 startActivity(intent)
@@ -62,21 +62,17 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
-        searchBinding.inputEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchBinding.clearIcon.visibility = clearButtonVisibility(s)
-                if (searchBinding.inputEditText.hasFocus() && s?.isEmpty() == true)
-                    showHistory()
-                else
-                    searchDebounce()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                searchText = s.toString()
-            }
-        })
+        searchBinding.inputEditText.addTextChangedListener(
+            onTextChanged = { s, _, _, _ ->
+                run {
+                    searchBinding.clearIcon.isVisible = s?.isNotEmpty() == true
+                    if (searchBinding.inputEditText.hasFocus() && s?.isEmpty() == true)
+                        showHistory()
+                    else
+                        searchDebounce()
+                }
+            }, afterTextChanged = { s -> searchText = s.toString() }
+        )
         searchBinding.inputEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && searchBinding.inputEditText.text.isEmpty()) showHistory() else goneHistory()
         }
@@ -88,7 +84,7 @@ class SearchActivity : AppCompatActivity() {
         }
         searchBinding.messageBtn.setOnClickListener { search() }
         searchBinding.searchHistoryBtn.setOnClickListener {
-            sharedPreferences.clearSharedPreference(this)
+            sharedPreferences.clearSharedPreference()
             goneHistory()
         }
     }
@@ -183,7 +179,7 @@ class SearchActivity : AppCompatActivity() {
         searchBinding.trackRecyclerView.layoutManager = LinearLayoutManager(this@SearchActivity)
         searchBinding.trackRecyclerView.adapter = adapter
         adapter.updateList(
-            sharedPreferences.getFromHistory(this).reversed().toMutableList()
+            sharedPreferences.getFromHistory().reversed().toMutableList()
         )
         if (adapter.itemCount != 0) {
             searchBinding.searchHistory.visibility = View.VISIBLE
@@ -198,14 +194,6 @@ class SearchActivity : AppCompatActivity() {
         searchBinding.messageImg.visibility = View.GONE
         searchBinding.messageText.visibility = View.GONE
         searchBinding.searchPgb.visibility = View.GONE
-    }
-
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
     }
 
     @SuppressLint("MissingInflatedId")
