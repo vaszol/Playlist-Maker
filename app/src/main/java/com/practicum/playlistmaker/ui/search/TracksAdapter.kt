@@ -15,10 +15,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TracksAdapter(
-    private var model: MutableList<Track>,
-    private val clickListener: ClickListener,
+    private val clickListener: (track: Track) -> Unit,
 ) : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
-
+    private var model = emptyList<Track>()
     private lateinit var tracksBinding: TrackItemBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         tracksBinding = TrackItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -27,7 +26,7 @@ class TracksAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(model[position])
-        holder.itemView.setOnClickListener { clickListener.onClick(model[position]) }
+        holder.itemView.setOnClickListener { clickListener(model[position]) }
     }
 
     override fun getItemCount(): Int {
@@ -35,8 +34,8 @@ class TracksAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateList(model: List<Track>?) {
-        this.model = model as MutableList<Track>
+    fun updateList(model: List<Track>) {
+        this.model = model
         notifyDataSetChanged()
     }
 
@@ -57,10 +56,7 @@ class TracksAdapter(
         }
     }
 
-    fun interface ClickListener {
-        fun onClick(track: Track)
-    }
-
+    @Suppress("SameParameterValue")
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,

@@ -28,8 +28,7 @@ class PlayerInteractorlmpl : PlayerInteractor {
     override fun playbackControl(mediaPlayer: MediaPlayer) {
         when (playerState) {
             PlayerStateEnum.STATE_PLAYING -> pausePlayer(mediaPlayer)
-            PlayerStateEnum.STATE_PREPARED, PlayerStateEnum.STATE_PAUSED -> startPlayer(mediaPlayer)
-            PlayerStateEnum.STATE_DEFAULT -> {}
+            PlayerStateEnum.STATE_PAUSED -> startPlayer(mediaPlayer)
             null -> {}
         }
     }

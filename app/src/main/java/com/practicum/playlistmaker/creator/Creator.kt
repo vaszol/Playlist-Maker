@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain
+package com.practicum.playlistmaker.creator
 
 import android.app.Application
 import android.app.Application.MODE_PRIVATE
@@ -18,7 +18,7 @@ object Creator {
     private lateinit var application: Application
 
     fun initApplication(application: Application) {
-        this.application = application
+        Creator.application = application
     }
 
     private fun getTracksRepository(): TrackRepository {
