@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.ui.search.viewModel
 
+import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
@@ -23,17 +24,18 @@ class SearchViewModel(
 ) : ViewModel() {
 
     companion object {
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val trackInteractor = Creator.provideTracksInteractor()
-                val sharedPreferencesInteractor = Creator.provideSharedPreferencesInteractor()
+        fun getViewModelFactory(application: Application): ViewModelProvider.Factory =
+            viewModelFactory {
+                initializer {
+                    val trackInteractor = Creator.provideTracksInteractor(application)
+                    val sharedPreferencesInteractor = Creator.provideSharedPreferencesInteractor()
 
-                SearchViewModel(
-                    trackInteractor,
-                    sharedPreferencesInteractor
-                )
+                    SearchViewModel(
+                        trackInteractor,
+                        sharedPreferencesInteractor
+                    )
+                }
             }
-        }
 
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -72,19 +74,18 @@ class SearchViewModel(
 
     fun search() {
         handler.removeCallbacks(searchRunnable)
-        goneHistory()
-        _state.postValue(SearchScreenState(searchPgbVisible = true, tracks = mutableListOf()))
-        trackInteractor.searchTracks(
-            searchText,
-            object : TrackInteractor.TracksConsumer {
-                override fun consume(foundTracks: Resource<List<Track>>) = when (foundTracks) {
+        if (searchText.isNotEmpty()) {
+            goneHistory()
+            _state.postValue(SearchScreenState(searchPgbVisible = true, tracks = mutableListOf()))
+            trackInteractor.searchTracks(searchText) {
+                when (it) {
                     is Resource.Error -> messageFail()
                     is Resource.Success ->
-                        if (foundTracks.data.isNullOrEmpty()) messageEmpty()
-                        else messageOk(foundTracks)
+                        if (it.data.isNullOrEmpty()) messageEmpty()
+                        else messageOk(it)
                 }
             }
-        )
+        }
     }
 
     fun onTrackClick(track: Track) {

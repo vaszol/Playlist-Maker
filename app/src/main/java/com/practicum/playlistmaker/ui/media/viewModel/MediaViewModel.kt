@@ -24,57 +24,65 @@ class MediaViewModel : ViewModel() {
     private val mediaRunnable = object : Runnable {
         override fun run() {
             if (mediaPlayer.isPlaying) {
-                _state.value =
-                    getCurrentScreenState().copy(
-                        playerState = PlayerStateEnum.STATE_PLAYING,
-                        trackTime = SimpleDateFormat(
+                _state.postValue(
+                    MediaScreenState(
+                        PlayerStateEnum.STATE_PLAYING,
+                        SimpleDateFormat(
                             "mm:ss",
                             Locale.getDefault()
                         ).format(mediaPlayer.currentPosition)
                     )
+                )
                 mainThreadHandler.postDelayed(this, 1000L)
             } else {
-                creatorPlayer.pausePlayer(mediaPlayer)
-                _state.postValue(MediaScreenState(PlayerStateEnum.STATE_PAUSED))
+                pause()
             }
         }
     }
 
     fun setTrack(track: Track?) {
         _state.postValue(MediaScreenState(track = track))
-        preparePlayer(track!!.previewUrl)
+        if (track != null) {
+            preparePlayer(track.previewUrl)
+        }
         this.track = track
     }
 
     fun play() {
         creatorPlayer.playbackControl(mediaPlayer)
         if (mediaPlayer.isPlaying)
-            _state.postValue(MediaScreenState(PlayerStateEnum.STATE_PLAYING))
+            _state.value = getCurrentScreenState().copy(playerState = PlayerStateEnum.STATE_PLAYING)
         else
-            _state.postValue(MediaScreenState(PlayerStateEnum.STATE_PAUSED))
+            _state.value = getCurrentScreenState().copy(playerState = PlayerStateEnum.STATE_PAUSED)
         mainThreadHandler.post(mediaRunnable)
     }
 
     fun pause() {
         creatorPlayer.pausePlayer(mediaPlayer)
-        _state.postValue(MediaScreenState(PlayerStateEnum.STATE_PAUSED))
+        _state.value = getCurrentScreenState().copy(playerState = PlayerStateEnum.STATE_PAUSED)
         mainThreadHandler.removeCallbacks(mediaRunnable)
     }
 
     fun stop() {
-        mediaPlayer.release()
+        mediaPlayer.reset()
     }
 
     private fun preparePlayer(url: String) {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            _state.postValue(MediaScreenState(PlayerStateEnum.STATE_PAUSED))
-            creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
-        }
-        mediaPlayer.setOnCompletionListener {
-            _state.postValue(MediaScreenState(PlayerStateEnum.STATE_PAUSED))
-            creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
+        mediaPlayer.apply {
+            setDataSource(url)
+            prepareAsync()
+            setOnPreparedListener {
+                _state.value =
+                    getCurrentScreenState().copy(playerState = PlayerStateEnum.STATE_PAUSED)
+                creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
+            }
+            setOnCompletionListener {
+                _state.value = getCurrentScreenState().copy(
+                    playerState = PlayerStateEnum.STATE_PAUSED,
+                    trackTime = ""
+                )
+                creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
+            }
         }
     }
 

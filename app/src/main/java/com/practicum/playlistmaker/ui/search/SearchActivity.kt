@@ -12,8 +12,8 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.ui.media.MediaActivity
 import com.practicum.playlistmaker.ui.search.viewModel.SearchViewModel
@@ -29,7 +29,7 @@ class SearchActivity : AppCompatActivity() {
         searchBinding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(searchBinding.root)
         viewModel = ViewModelProvider(
-            this, SearchViewModel.getViewModelFactory()
+            this, SearchViewModel.getViewModelFactory(application)
         )[SearchViewModel::class.java]
 
         adapter = TracksAdapter(viewModel::onTrackClick)
@@ -41,16 +41,16 @@ class SearchActivity : AppCompatActivity() {
             messageBtn.setOnClickListener { viewModel.search() }
             searchHistoryBtn.setOnClickListener { viewModel.clearHistory() }
             inputEditText.apply {
-                doOnTextChanged { s, _, _, _ ->
+                doOnTextChanged { searchText, _, _, _ ->
                     run {
-                        searchBinding.clearIcon.isVisible = s?.isNotEmpty() == true
-                        if (searchBinding.inputEditText.hasFocus() && s?.isEmpty() == true)
+                        searchBinding.clearIcon.isVisible = searchText?.isNotEmpty() == true
+                        if (searchBinding.inputEditText.hasFocus() && searchText?.isEmpty() == true)
                             viewModel.showHistory()
                         else
                             viewModel.searchDebounce()
                     }
                 }
-                doAfterTextChanged { s -> viewModel.doAfterTextChanged(s.toString()) }
+                doAfterTextChanged { searchText -> viewModel.doAfterTextChanged(searchText.toString()) }
                 setOnEditorActionListener { _, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         viewModel.search()
@@ -104,7 +104,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun openPlayer() {
         Intent(this, MediaActivity::class.java).apply {
-            putExtra("track", Gson().toJson(viewModel.state.value?.trackSelected))
+            putExtra("track", Creator.getGson().toJson(viewModel.state.value?.trackSelected))
             startActivity(this)
         }
     }
