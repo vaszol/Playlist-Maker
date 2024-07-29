@@ -1,73 +1,26 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatDelegate
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.itunes.Track
-
-const val APP_PREFERENCES = "app_preferences"
-const val DARK_THEME_KEY = "dark_theme_key"
-const val SEARCH_HISTORY = "search_history_key"
+import com.practicum.playlistmaker.domain.Creator
+import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 
 class App : Application() {
     private var darkTheme = false
-    private var sharedPrefs: SharedPreferences? = null
+    private var sharedPreferences: SharedPreferencesInteractor? = null
 
     override fun onCreate() {
         super.onCreate()
-        sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        Creator.initApplication(this)
+        sharedPreferences = Creator.provideSharedPreferencesInteractor()
         switchTheme(getThemePreferences())
     }
 
     fun getThemePreferences(): Boolean {
-        val b = sharedPrefs?.getBoolean(DARK_THEME_KEY, darkTheme) == true
-        return b
+        return sharedPreferences?.getThemePreferences(darkTheme) ?: darkTheme
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
         darkTheme = darkThemeEnabled
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-        )
-        sharedPrefs?.edit()
-            ?.putBoolean(DARK_THEME_KEY, darkTheme)
-            ?.apply()
-    }
-
-    fun getFromHistory(): MutableList<Track> {
-        val json = sharedPrefs?.getString(SEARCH_HISTORY, "")
-        if (json.isNullOrEmpty()) {
-            return mutableListOf()
-        } else {
-            val itemType = object : TypeToken<List<Track>>() {}.type
-            return Gson().fromJson(json, itemType)
-        }
-    }
-
-    fun addHistory(item: Track) {
-        val history: MutableList<Track> = getFromHistory()
-        if (history.isNotEmpty()) {
-            if (history.any { it.trackId == item.trackId }) {
-                history.remove(item)
-            } else {
-                while (history.size >= 10) history.removeFirst()
-            }
-        }
-        history.add(item)
-        sharedPrefs?.edit()
-            ?.putString(SEARCH_HISTORY, Gson().toJson(history))
-            ?.apply()
-    }
-
-    fun clearHistory() {
-        sharedPrefs?.edit()
-            ?.putString(SEARCH_HISTORY, "")
-            ?.apply()
+        if (sharedPreferences != null) sharedPreferences!!.switchTheme(darkTheme)
     }
 }
