@@ -12,15 +12,23 @@ class SharedPreferencesInteractorImpl(private val repo: SharedPreferencesReposit
     }
 
     override fun getFromHistory(): MutableList<Track> {
-        return repo.getFromHistory()
+        return repo.getFromHistory().toList().reversed() as MutableList<Track>
+    }
+
+    override fun setTrackToPlay(listTrack: Track) {
+        repo.setTrackToPlay(listTrack)
+    }
+
+    override fun getTrackToPlay(): Track? {
+        return repo.getTrackToPlay()
     }
 
     override fun clearSharedPreference() {
         repo.clearSharedPreference()
     }
 
-    override fun getThemePreferences(darkTheme: Boolean): Boolean {
-        return repo.getThemePreferences(darkTheme)
+    override fun getThemePreferences(): Boolean {
+        return repo.getThemePreferences()
     }
 
     override fun switchTheme(darkTheme: Boolean) {

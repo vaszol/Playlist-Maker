@@ -6,19 +6,10 @@ import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.data.NetworkClient
 import com.practicum.playlistmaker.data.dto.Response
 import com.practicum.playlistmaker.data.dto.TrackRequest
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-class ItunesApiClient(private val context: Context) : NetworkClient {
-    private val itunesBaseUrl = "https://itunes.apple.com"
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(itunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val imdbService = retrofit.create(ItunesApi::class.java)
+class ItunesApiClient(private val itunesApi: ItunesApi, private val context: Context) :
+    NetworkClient {
 
     override fun doRequest(dto: Any): Response {
         try {
@@ -26,7 +17,7 @@ class ItunesApiClient(private val context: Context) : NetworkClient {
                 return Response().apply { resultCode = -1 }
             }
             if (dto is TrackRequest) {
-                val resp = imdbService.search(dto.expression).execute()
+                val resp = itunesApi.search(dto.expression).execute()
                 val body = resp.body() ?: Response()
                 return body.apply { resultCode = resp.code() }
             } else {

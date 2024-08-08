@@ -1,15 +1,10 @@
 package com.practicum.playlistmaker.ui.search.viewModel
 
-import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.models.Resource
@@ -24,19 +19,6 @@ class SearchViewModel(
 ) : ViewModel() {
 
     companion object {
-        fun getViewModelFactory(application: Application): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val trackInteractor = Creator.provideTracksInteractor(application)
-                    val sharedPreferencesInteractor = Creator.provideSharedPreferencesInteractor()
-
-                    SearchViewModel(
-                        trackInteractor,
-                        sharedPreferencesInteractor
-                    )
-                }
-            }
-
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
@@ -91,6 +73,7 @@ class SearchViewModel(
     fun onTrackClick(track: Track) {
         if (clickDebounce()) {
             sharedPreferencesInteractor.addHistory(track)
+            sharedPreferencesInteractor.setTrackToPlay(track)
             _state.value = getCurrentScreenState().copy(trackSelected = track)
             event.value = SearchScreenEvent.OpenPlayerScreen
         }
@@ -107,7 +90,7 @@ class SearchViewModel(
     }
 
     fun showHistory() {
-        val tracks = sharedPreferencesInteractor.getFromHistory().toList().reversed()
+        val tracks = sharedPreferencesInteractor.getFromHistory()
         _state.postValue(
             SearchScreenState(
                 tracks = tracks,

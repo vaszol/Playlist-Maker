@@ -6,21 +6,30 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.domain.api.PlayerInteractor
+import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.ui.media.MediaScreenState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaViewModel : ViewModel() {
+class MediaViewModel(
+    private val creatorPlayer: PlayerInteractor,
+    sharedPreferencesInteractor: SharedPreferencesInteractor,
+) : ViewModel() {
 
     private var mediaPlayer = MediaPlayer()
     private val mainThreadHandler = Handler(Looper.getMainLooper())
-    private var creatorPlayer = Creator.providePlayerInteractor()
-    private var track: Track? = null
+    private var track: Track? = sharedPreferencesInteractor.getTrackToPlay()
     private val _state = MutableLiveData<MediaScreenState>()
     val state: LiveData<MediaScreenState> = _state
+
+    init {
+        _state.postValue(MediaScreenState(track = track))
+        preparePlayer()
+    }
+
     private val mediaRunnable = object : Runnable {
         override fun run() {
             if (mediaPlayer.isPlaying) {
@@ -38,14 +47,6 @@ class MediaViewModel : ViewModel() {
                 pause()
             }
         }
-    }
-
-    fun setTrack(track: Track?) {
-        _state.postValue(MediaScreenState(track = track))
-        if (track != null) {
-            preparePlayer(track.previewUrl)
-        }
-        this.track = track
     }
 
     fun play() {
@@ -67,21 +68,23 @@ class MediaViewModel : ViewModel() {
         mediaPlayer.reset()
     }
 
-    private fun preparePlayer(url: String) {
-        mediaPlayer.apply {
-            setDataSource(url)
-            prepareAsync()
-            setOnPreparedListener {
-                _state.value =
-                    getCurrentScreenState().copy(playerState = PlayerStateEnum.STATE_PAUSED)
-                creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
-            }
-            setOnCompletionListener {
-                _state.value = getCurrentScreenState().copy(
-                    playerState = PlayerStateEnum.STATE_PAUSED,
-                    trackTime = ""
-                )
-                creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
+    private fun preparePlayer() {
+        track?.let {
+            mediaPlayer.apply {
+                setDataSource(it.previewUrl)
+                prepareAsync()
+                setOnPreparedListener {
+                    _state.value =
+                        getCurrentScreenState().copy(playerState = PlayerStateEnum.STATE_PAUSED)
+                    creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
+                }
+                setOnCompletionListener {
+                    _state.value = getCurrentScreenState().copy(
+                        playerState = PlayerStateEnum.STATE_PAUSED,
+                        trackTime = ""
+                    )
+                    creatorPlayer.playerState = PlayerStateEnum.STATE_PAUSED
+                }
             }
         }
     }
