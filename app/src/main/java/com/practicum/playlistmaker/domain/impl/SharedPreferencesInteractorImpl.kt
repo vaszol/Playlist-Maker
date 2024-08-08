@@ -12,7 +12,7 @@ class SharedPreferencesInteractorImpl(private val repo: SharedPreferencesReposit
     }
 
     override fun getFromHistory(): MutableList<Track> {
-        return repo.getFromHistory().toList().reversed() as MutableList<Track>
+        return repo.getFromHistory().reversed().toMutableList()
     }
 
     override fun setTrackToPlay(listTrack: Track) {

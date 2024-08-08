@@ -6,9 +6,9 @@ import com.practicum.playlistmaker.domain.SharedPreferencesConverter
 
 class SharedPreferencesConverterImpl(private val gson: Gson) : SharedPreferencesConverter {
 
-    override fun convertJsonToList(json: String): List<Track> {
-        return gson.fromJson(json, Array<Track>::class.java).toList()
-    }
+    override fun convertJsonToList(json: String): List<Track> =
+        json.isEmpty().let { gson.fromJson(json, Array<Track>::class.java) }?.toList()
+            ?: emptyList()
 
     override fun convertListToJson(tracks: List<Track>): String = gson.toJson(tracks)
 

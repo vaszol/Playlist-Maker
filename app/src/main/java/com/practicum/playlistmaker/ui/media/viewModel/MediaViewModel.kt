@@ -25,11 +25,6 @@ class MediaViewModel(
     private val _state = MutableLiveData<MediaScreenState>()
     val state: LiveData<MediaScreenState> = _state
 
-    init {
-        _state.postValue(MediaScreenState(track = track))
-        preparePlayer()
-    }
-
     private val mediaRunnable = object : Runnable {
         override fun run() {
             if (mediaPlayer.isPlaying) {
@@ -47,6 +42,11 @@ class MediaViewModel(
                 pause()
             }
         }
+    }
+
+    fun setTrack() {
+        _state.postValue(MediaScreenState(track = track))
+        preparePlayer()
     }
 
     fun play() {

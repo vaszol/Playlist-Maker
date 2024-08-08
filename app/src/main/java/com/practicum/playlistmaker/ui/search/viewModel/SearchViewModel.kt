@@ -90,15 +90,16 @@ class SearchViewModel(
     }
 
     fun showHistory() {
-        val tracks = sharedPreferencesInteractor.getFromHistory()
-        _state.postValue(
-            SearchScreenState(
-                tracks = tracks,
-                searchHistoryVisible = true,
-                messageVisible = false,
-                searchPgbVisible = false,
+        sharedPreferencesInteractor.getFromHistory().let {
+            _state.postValue(
+                SearchScreenState(
+                    tracks = it,
+                    searchHistoryVisible = true,
+                    messageVisible = false,
+                    searchPgbVisible = false,
+                )
             )
-        )
+        }
     }
 
     private fun messageEmpty() {

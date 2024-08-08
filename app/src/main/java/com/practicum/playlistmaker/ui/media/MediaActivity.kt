@@ -21,7 +21,7 @@ class MediaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mediaBinding = ActivityMediaBinding.inflate(layoutInflater)
         setContentView(mediaBinding.root)
-
+        viewModel.setTrack()
         viewModel.state.observe(this) {
             it.track?.let(::setTrackData)
             mediaBinding.trackTime.text = it.trackTime.ifEmpty { "00:00" }
