@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.api.SharedPreferencesRepository
 import com.practicum.playlistmaker.domain.models.Track
 
@@ -24,7 +24,7 @@ class SharedPreferencesRepositoryImpl(
             }
         }
         history.add(track)
-        sharedPreferences.edit { putString(SEARCH_HISTORY, Gson().toJson(history)) }
+        sharedPreferences.edit { putString(SEARCH_HISTORY, Creator.getGson().toJson(history)) }
     }
 
     override fun getFromHistory(): MutableList<Track> {
@@ -33,7 +33,7 @@ class SharedPreferencesRepositoryImpl(
             return mutableListOf()
         } else {
             val itemType = object : TypeToken<List<Track>>() {}.type
-            return Gson().fromJson(json, itemType)
+            return Creator.getGson().fromJson(json, itemType)
         }
     }
 

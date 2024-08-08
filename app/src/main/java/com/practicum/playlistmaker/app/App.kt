@@ -1,7 +1,7 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.app
 
 import android.app.Application
-import com.practicum.playlistmaker.domain.Creator
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 
 class App : Application() {

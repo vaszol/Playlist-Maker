@@ -6,7 +6,7 @@ import com.practicum.playlistmaker.domain.models.Track
 interface TrackInteractor {
     fun searchTracks(expression: String, consumer: TracksConsumer)
 
-    interface TracksConsumer {
+    fun interface TracksConsumer {
         fun consume(foundTracks: Resource<List<Track>>)
     }
 }

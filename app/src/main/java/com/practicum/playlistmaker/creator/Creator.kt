@@ -1,7 +1,9 @@
-package com.practicum.playlistmaker.domain
+package com.practicum.playlistmaker.creator
 
 import android.app.Application
 import android.app.Application.MODE_PRIVATE
+import android.content.Context
+import com.google.gson.Gson
 import com.practicum.playlistmaker.data.SharedPreferencesRepositoryImpl
 import com.practicum.playlistmaker.data.TracksRepositoryImpl
 import com.practicum.playlistmaker.data.network.ItunesApiClient
@@ -18,15 +20,15 @@ object Creator {
     private lateinit var application: Application
 
     fun initApplication(application: Application) {
-        this.application = application
+        Creator.application = application
     }
 
-    private fun getTracksRepository(): TrackRepository {
-        return TracksRepositoryImpl(ItunesApiClient())
+    private fun getTracksRepository(context: Context): TrackRepository {
+        return TracksRepositoryImpl(ItunesApiClient(context))
     }
 
-    fun provideTracksInteractor(): TrackInteractor {
-        return TrackInteractorImpl(getTracksRepository())
+    fun provideTracksInteractor(context: Context): TrackInteractor {
+        return TrackInteractorImpl(getTracksRepository(context))
     }
 
     fun provideSharedPreferencesInteractor(): SharedPreferencesInteractor =
@@ -37,4 +39,8 @@ object Creator {
         )
 
     fun providePlayerInteractor(): PlayerInteractor = PlayerInteractorlmpl()
+
+    fun getGson(): Gson {
+        return Gson()
+    }
 }
