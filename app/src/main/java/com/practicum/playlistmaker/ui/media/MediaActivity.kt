@@ -4,29 +4,24 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivityMediaBinding
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.ui.media.viewModel.MediaViewModel
 import com.practicum.playlistmaker.ui.setSource
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MediaActivity : AppCompatActivity() {
     private lateinit var mediaBinding: ActivityMediaBinding
-    private lateinit var viewModel: MediaViewModel
+    private val viewModel by viewModel<MediaViewModel>()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mediaBinding = ActivityMediaBinding.inflate(layoutInflater)
         setContentView(mediaBinding.root)
-        viewModel = ViewModelProvider(this)[MediaViewModel::class.java]
-        viewModel.setTrack(
-            Creator.getGson().fromJson(intent.getStringExtra("track"), Track::class.java)
-        )
-
+        viewModel.setTrack()
         viewModel.state.observe(this) {
             it.track?.let(::setTrackData)
             mediaBinding.trackTime.text = it.trackTime.ifEmpty { "00:00" }

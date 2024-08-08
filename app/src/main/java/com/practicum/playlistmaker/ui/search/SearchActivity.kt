@@ -11,26 +11,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.ui.media.MediaActivity
 import com.practicum.playlistmaker.ui.search.viewModel.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchBinding: ActivitySearchBinding
     private lateinit var adapter: TracksAdapter
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by viewModel<SearchViewModel>()
 
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         searchBinding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(searchBinding.root)
-        viewModel = ViewModelProvider(
-            this, SearchViewModel.getViewModelFactory(application)
-        )[SearchViewModel::class.java]
 
         adapter = TracksAdapter(viewModel::onTrackClick)
 
@@ -103,10 +99,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun openPlayer() {
-        Intent(this, MediaActivity::class.java).apply {
-            putExtra("track", Creator.getGson().toJson(viewModel.state.value?.trackSelected))
-            startActivity(this)
-        }
+        Intent(this, MediaActivity::class.java).apply { startActivity(this) }
     }
 
     private fun hideKeyboard() {

@@ -5,15 +5,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.ui.settings.viewModel.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
 class SettingsActivity : AppCompatActivity() {
     private lateinit var settingsBinding: ActivitySettingsBinding
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel by viewModel<SettingsViewModel>()
 
     @SuppressLint("WrongViewCast", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,10 +21,6 @@ class SettingsActivity : AppCompatActivity() {
         settingsBinding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(settingsBinding.root)
 
-        viewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getViewModelFactory()
-        )[SettingsViewModel::class.java]
         settingsBinding.apply {
             settingsToolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
             settingThemeSwitch.apply {
