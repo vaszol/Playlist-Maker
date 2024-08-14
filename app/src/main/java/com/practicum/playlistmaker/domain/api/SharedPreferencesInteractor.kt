@@ -7,9 +7,13 @@ interface SharedPreferencesInteractor {
 
     fun getFromHistory(): MutableList<Track>
 
+    fun setTrackToPlay(listTrack: Track)
+
+    fun getTrackToPlay(): Track?
+
     fun clearSharedPreference()
 
-    fun getThemePreferences(darkTheme: Boolean): Boolean
+    fun getThemePreferences(): Boolean
 
     fun switchTheme(darkTheme: Boolean)
 }

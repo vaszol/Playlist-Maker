@@ -4,18 +4,24 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.api.SharedPreferencesRepository
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.domain.SharedPreferencesConverter
 
 class SharedPreferencesRepositoryImpl(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val sharedPreferencesConverter: SharedPreferencesConverter
 ) : SharedPreferencesRepository {
+
+    private var track: Track? = null
+
+    init {
+        switchTheme(getThemePreferences())
+    }
 
     @SuppressLint("CommitPrefEdits")
     override fun addHistory(track: Track) {
-        val history: MutableList<Track> = getFromHistory()
+        val history: MutableList<Track> = getFromHistory().toMutableList()
         if (history.isNotEmpty()) {
             if (history.any { it.trackId == track.trackId }) {
                 history.remove(track)
@@ -24,16 +30,25 @@ class SharedPreferencesRepositoryImpl(
             }
         }
         history.add(track)
-        sharedPreferences.edit { putString(SEARCH_HISTORY, Creator.getGson().toJson(history)) }
+        val tracksString = sharedPreferencesConverter.convertListToJson(history)
+        sharedPreferences.edit { putString(SEARCH_HISTORY, tracksString) }
     }
 
     override fun getFromHistory(): MutableList<Track> {
-        val json = sharedPreferences.getString(SEARCH_HISTORY, "")
-        if (json.isNullOrEmpty()) {
-            return mutableListOf()
-        } else {
-            val itemType = object : TypeToken<List<Track>>() {}.type
-            return Creator.getGson().fromJson(json, itemType)
+        return sharedPreferences.getString(SEARCH_HISTORY, null)?.let {
+            sharedPreferencesConverter.convertJsonToList(it)
+        }?.toMutableList() ?: mutableListOf()
+    }
+
+    override fun setTrackToPlay(track: Track) {
+        this.track = track
+    }
+
+    override fun getTrackToPlay(): Track? {
+        return track.let {
+            val currentTrack = track?.copy()
+            track = null
+            currentTrack
         }
     }
 
@@ -42,8 +57,8 @@ class SharedPreferencesRepositoryImpl(
         sharedPreferences.edit { putString(SEARCH_HISTORY, "") }
     }
 
-    override fun getThemePreferences(darkTheme: Boolean): Boolean {
-        return sharedPreferences.getBoolean(DARK_THEME_KEY, darkTheme)
+    override fun getThemePreferences(): Boolean {
+        return sharedPreferences.getBoolean(DARK_THEME_KEY, false)
     }
 
     @SuppressLint("CommitPrefEdits")
