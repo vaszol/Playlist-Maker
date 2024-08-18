@@ -9,4 +9,5 @@
     <color name="message_btn_text">#1A1B22</color>
     <color name="media_text">#FFFFFF</color>
     <color name="play_btn">#FFFFFF</color>
+    <color name="bottom_navigation_btn">#FFFFFFFF</color>
 </resources>

@@ -1,38 +1,43 @@
 package com.practicum.playlistmaker.ui.search
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.ui.media.MediaActivity
 import com.practicum.playlistmaker.ui.search.viewModel.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
-    private lateinit var searchBinding: ActivitySearchBinding
+class SearchFragment : Fragment() {
+    private lateinit var searchBinding: FragmentSearchBinding
     private lateinit var adapter: TracksAdapter
     private val viewModel by viewModel<SearchViewModel>()
 
-    @SuppressLint("MissingInflatedId", "SetTextI18n")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        searchBinding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(searchBinding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        searchBinding = FragmentSearchBinding.inflate(layoutInflater)
+        return searchBinding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         adapter = TracksAdapter(viewModel::onTrackClick)
-
         searchBinding.apply {
             trackRecyclerView.adapter = adapter
-            searchToolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
             clearIcon.setOnClickListener { viewModel.clearText() }
             messageBtn.setOnClickListener { viewModel.search() }
             searchHistoryBtn.setOnClickListener { viewModel.clearHistory() }
@@ -56,8 +61,7 @@ class SearchActivity : AppCompatActivity() {
                 setOnFocusChangeListener { _, hasFocus -> viewModel.focusChange(hasFocus) }
             }
         }
-
-        viewModel.state.observe(this) {
+        viewModel.state.observe(viewLifecycleOwner) {
             searchBinding.apply {
                 searchHistory.isVisible = it.searchHistoryVisible && it.tracks.isNotEmpty()
                 searchHistoryBtn.isVisible = it.searchHistoryVisible && it.tracks.isNotEmpty()
@@ -84,26 +88,29 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.event.observe(this) {
+        viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is SearchScreenEvent.OpenPlayerScreen -> openPlayer()
+                is SearchScreenEvent.OpenPlayerScreen -> startActivity(
+                    Intent(
+                        requireContext(),
+                        MediaActivity::class.java
+                    )
+                )
+
                 is SearchScreenEvent.ClearSearch -> searchBinding.inputEditText.text.clear()
                 else -> hideKeyboard()
             }
         }
     }
 
-    public override fun onStart() {
+    override fun onStart() {
         super.onStart()
         viewModel.showHistory()
     }
 
-    private fun openPlayer() {
-        Intent(this, MediaActivity::class.java).apply { startActivity(this) }
-    }
-
     private fun hideKeyboard() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchBinding.clearIcon.windowToken, 0)
     }
 }

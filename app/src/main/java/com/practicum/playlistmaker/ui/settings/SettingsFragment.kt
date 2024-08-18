@@ -4,27 +4,34 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.databinding.FragmentSettingsBinding
 import com.practicum.playlistmaker.ui.settings.viewModel.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
-class SettingsActivity : AppCompatActivity() {
-    private lateinit var settingsBinding: ActivitySettingsBinding
+class SettingsFragment : Fragment() {
+    private lateinit var settingsBinding: FragmentSettingsBinding
     private val viewModel by viewModel<SettingsViewModel>()
 
-    @SuppressLint("WrongViewCast", "MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        settingsBinding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(settingsBinding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        settingsBinding = FragmentSettingsBinding.inflate(layoutInflater)
+        return settingsBinding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         settingsBinding.apply {
-            settingsToolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
             settingThemeSwitch.apply {
-                viewModel.theme.observe(this@SettingsActivity) { isChecked = it }
+                viewModel.theme.observe(viewLifecycleOwner) { isChecked = it }
                 setOnClickListener { viewModel.themeSwitch(this.isChecked) }
             }
             settingShareBtn.setOnClickListener {
