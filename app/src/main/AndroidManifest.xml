@@ -18,24 +18,13 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name=".ui.search.SearchActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PlaylistMakerSecond" />
-        <activity
             android:name=".ui.media.MediaActivity"
             android:exported="false"
             android:theme="@style/Theme.PlaylistMakerSecond" />
         <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PlaylistMakerSecond" />
-        <activity
-            android:name=".ui.playlist.PlaylistActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PlaylistMakerSecond" />
-        <activity
             android:name=".ui.main.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,5 +32,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

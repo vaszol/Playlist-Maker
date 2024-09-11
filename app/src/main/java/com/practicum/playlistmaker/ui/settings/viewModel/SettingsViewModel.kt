@@ -9,10 +9,11 @@ import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 class SettingsViewModel(
     private var sharedPreferences: SharedPreferencesInteractor
 ) : ViewModel() {
-    val theme: LiveData<Boolean> =
-        MutableLiveData(sharedPreferences.getThemePreferences()).map { it == true }
+    private val _theme = MutableLiveData(sharedPreferences.getThemePreferences())
+    val theme: LiveData<Boolean> = _theme.map { it == true }
 
     fun themeSwitch(checked: Boolean) {
         sharedPreferences.switchTheme(checked)
+        _theme.value = sharedPreferences.getThemePreferences()
     }
 }
