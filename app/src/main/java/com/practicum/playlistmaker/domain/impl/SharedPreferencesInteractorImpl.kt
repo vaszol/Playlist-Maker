@@ -7,16 +7,16 @@ import com.practicum.playlistmaker.domain.models.Track
 class SharedPreferencesInteractorImpl(private val repo: SharedPreferencesRepository) :
     SharedPreferencesInteractor {
 
-    override fun addHistory(listTrack: Track) {
-        repo.addHistory(listTrack)
+    override fun addHistory(track: Track) {
+        repo.addHistory(track)
     }
 
     override fun getFromHistory(): MutableList<Track> {
         return repo.getFromHistory().reversed().toMutableList()
     }
 
-    override fun setTrackToPlay(listTrack: Track) {
-        repo.setTrackToPlay(listTrack)
+    override fun setTrackToPlay(track: Track) {
+        repo.setTrackToPlay(track)
     }
 
     override fun getTrackToPlay(): Track? {
