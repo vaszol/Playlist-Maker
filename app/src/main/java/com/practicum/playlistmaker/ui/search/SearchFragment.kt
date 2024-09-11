@@ -105,7 +105,7 @@ class SearchFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.showHistory()
+        viewModel.showTracks()
     }
 
     private fun hideKeyboard() {

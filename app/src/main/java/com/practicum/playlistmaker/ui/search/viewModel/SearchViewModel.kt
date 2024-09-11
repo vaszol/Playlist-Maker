@@ -89,6 +89,11 @@ class SearchViewModel(
         )
     }
 
+    fun showTracks() {
+        if (getCurrentScreenState().trackSelected == null == !getCurrentScreenState().searchHistoryVisible)
+            showHistory()
+    }
+
     fun showHistory() {
         sharedPreferencesInteractor.getFromHistory().let {
             _state.postValue(
