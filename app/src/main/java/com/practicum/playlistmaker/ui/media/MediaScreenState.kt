@@ -7,4 +7,5 @@ data class MediaScreenState(
     val playerState: PlayerStateEnum = PlayerStateEnum.STATE_PAUSED,
     val trackTime: String = "",
     val track: Track? = null,
+    val isLiked: Boolean = false,
 )

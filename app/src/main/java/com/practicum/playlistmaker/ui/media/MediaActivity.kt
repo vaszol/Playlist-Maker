@@ -31,11 +31,16 @@ class MediaActivity : AppCompatActivity() {
                     PlayerStateEnum.STATE_PAUSED -> mediaBinding.playBtn.setImageResource(R.drawable.ic_play)
                 }
             }
+            if (it.isLiked)
+                mediaBinding.likeBtn.setImageResource(R.drawable.ic_like)
+            else
+                mediaBinding.likeBtn.setImageResource(R.drawable.ic_not_like)
         }
 
         mediaBinding.apply {
             mediaToolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
             playBtn.setOnClickListener { viewModel.play() }
+            likeBtn.setOnClickListener { viewModel.like() }
         }
     }
 

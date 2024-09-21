@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.ui.search.SearchScreenEvent
 import com.practicum.playlistmaker.ui.search.SearchScreenState
 import com.practicum.playlistmaker.ui.search.SingleLiveEvent
 import com.practicum.playlistmaker.ui.util.debounce
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -66,7 +67,7 @@ class SearchViewModel(
             goneHistory()
             _state.postValue(SearchScreenState(searchPgbVisible = true, tracks = mutableListOf()))
 
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 trackInteractor.searchTracks(searchText)
                     .collect { pair ->
                         if (pair.second != null) messageFail()

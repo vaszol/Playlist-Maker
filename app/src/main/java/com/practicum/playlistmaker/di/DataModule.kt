@@ -2,9 +2,11 @@ package com.practicum.playlistmaker.di
 
 import android.app.Application
 import android.content.SharedPreferences
+import androidx.room.Room
 import com.google.gson.Gson
 import com.practicum.playlistmaker.data.NetworkClient
 import com.practicum.playlistmaker.data.SharedPreferencesConverterImpl
+import com.practicum.playlistmaker.data.db.AppDatabase
 import com.practicum.playlistmaker.data.network.ItunesApi
 import com.practicum.playlistmaker.data.network.ItunesApiClient
 import com.practicum.playlistmaker.domain.SharedPreferencesConverter
@@ -39,6 +41,10 @@ val DataModule = module {
 
     single<SharedPreferencesConverter> {
         SharedPreferencesConverterImpl(gson = get())
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "PlaylistMaker.db").build()
     }
 
     factory<Gson> { Gson() }
