@@ -24,10 +24,6 @@ class MediaViewModel(
     sharedPreferencesInteractor: SharedPreferencesInteractor,
 ) : ViewModel() {
 
-    companion object {
-        private const val TIMER_STEP_MILLIS = 300L
-    }
-
     private var mediaPlayer = MediaPlayer()
     private var timerJob: Job? = null
     private var track: Track? = sharedPreferencesInteractor.getTrackToPlay()
@@ -50,7 +46,8 @@ class MediaViewModel(
     }
 
     fun setTrack() {
-        _state.postValue(MediaScreenState(track = track, isLiked = track?.isLiked ?: false))
+        _state.value =
+            getCurrentScreenState().copy(track = track, isLiked = track?.isLiked ?: false)
         preparePlayer()
     }
 
@@ -121,4 +118,8 @@ class MediaViewModel(
     }
 
     private fun getCurrentScreenState() = _state.value ?: MediaScreenState()
+
+    companion object {
+        private const val TIMER_STEP_MILLIS = 300L
+    }
 }

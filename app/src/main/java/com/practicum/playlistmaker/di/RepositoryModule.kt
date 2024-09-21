@@ -12,7 +12,7 @@ import org.koin.dsl.module
 val RepositoryModule = module {
     factory { TrackDbConvertor() }
     single<SharedPreferencesRepository> {
-        SharedPreferencesRepositoryImpl(get(), get())
+        SharedPreferencesRepositoryImpl(get(), get(), get())
     }
 
     single<TrackRepository> {

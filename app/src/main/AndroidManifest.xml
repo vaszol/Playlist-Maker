@@ -15,12 +15,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PlaylistMaker"
+        android:theme="@style/Base.Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
             android:name=".ui.media.MediaActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PlaylistMakerSecond" />
+            android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"

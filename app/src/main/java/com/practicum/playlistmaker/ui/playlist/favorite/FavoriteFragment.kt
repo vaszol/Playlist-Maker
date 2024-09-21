@@ -20,10 +20,6 @@ class FavoriteFragment : Fragment() {
     private lateinit var adapter: TracksAdapter
     private val viewModel by viewModel<FavoriteViewModel>()
 
-    companion object {
-        fun newInstance() = FavoriteFragment()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,5 +57,9 @@ class FavoriteFragment : Fragment() {
                 )
             }
         }
+    }
+
+    companion object {
+        fun newInstance() = FavoriteFragment()
     }
 }

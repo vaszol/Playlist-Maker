@@ -16,10 +16,6 @@ class PlaylistFragment : Fragment() {
     private lateinit var binding: FragmentPlaylistBinding
     private val viewModel by viewModel<PlaylistViewModel>()
 
-    companion object {
-        fun newInstance() = PlaylistFragment()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,5 +37,9 @@ class PlaylistFragment : Fragment() {
             binding.messageImg.isVisible = it.isEmpty()
             binding.messageText.isVisible = it.isEmpty()
         }
+    }
+
+    companion object {
+        fun newInstance() = PlaylistFragment()
     }
 }

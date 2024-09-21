@@ -19,11 +19,6 @@ class SearchViewModel(
     private val sharedPreferencesInteractor: SharedPreferencesInteractor,
 ) : ViewModel() {
 
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
-
     private val searchDebounce =
         debounce<Unit>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { _ ->
             search()
@@ -31,8 +26,10 @@ class SearchViewModel(
 
     private val clickDebounce =
         debounce<Track>(CLICK_DEBOUNCE_DELAY, viewModelScope, false) { track ->
-            sharedPreferencesInteractor.addHistory(track)
-            sharedPreferencesInteractor.setTrackToPlay(track)
+            viewModelScope.launch(Dispatchers.IO) {
+                sharedPreferencesInteractor.addHistory(track)
+                sharedPreferencesInteractor.setTrackToPlay(track)
+            }
             _state.value = getCurrentScreenState().copy(trackSelected = track)
             event.value = SearchScreenEvent.OpenPlayerScreen
         }
@@ -43,7 +40,9 @@ class SearchViewModel(
     val event = SingleLiveEvent<SearchScreenEvent>()
 
     fun clearHistory() {
-        sharedPreferencesInteractor.clearSharedPreference()
+        viewModelScope.launch(Dispatchers.IO) {
+            sharedPreferencesInteractor.clearSharedPreference()
+        }
         goneHistory()
     }
 
@@ -96,15 +95,17 @@ class SearchViewModel(
     }
 
     fun showHistory() {
-        sharedPreferencesInteractor.getFromHistory().let {
-            _state.postValue(
-                SearchScreenState(
-                    tracks = it,
-                    searchHistoryVisible = true,
-                    messageVisible = false,
-                    searchPgbVisible = false,
+        viewModelScope.launch(Dispatchers.IO) {
+            sharedPreferencesInteractor.getFromHistory().let {
+                _state.postValue(
+                    SearchScreenState(
+                        tracks = it,
+                        searchHistoryVisible = true,
+                        messageVisible = false,
+                        searchPgbVisible = false,
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -143,4 +144,9 @@ class SearchViewModel(
     }
 
     private fun getCurrentScreenState() = state.value ?: SearchScreenState()
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 100L
+    }
 }

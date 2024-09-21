@@ -18,10 +18,6 @@ class FavoriteViewModel(
     private val sharedPreferencesInteractor: SharedPreferencesInteractor,
 ) : ViewModel() {
 
-    companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
-
     private val _tracks = MutableLiveData<List<Track>>(listOf())
     val tracks: LiveData<List<Track>> = _tracks
 
@@ -33,11 +29,17 @@ class FavoriteViewModel(
 
     private val clickDebounce =
         debounce<Track>(CLICK_DEBOUNCE_DELAY, viewModelScope, false) { track ->
-            sharedPreferencesInteractor.addHistory(track)
-            sharedPreferencesInteractor.setTrackToPlay(track)
+            viewModelScope.launch(Dispatchers.IO) {
+                sharedPreferencesInteractor.addHistory(track)
+                sharedPreferencesInteractor.setTrackToPlay(track)
+            }
             event.value = FavoriteScreenEvent.OpenPlayerScreen
         }
     val event = SingleLiveEvent<FavoriteScreenEvent>()
 
     fun onTrackClick(track: Track) = clickDebounce(track)
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 100L
+    }
 }
