@@ -11,7 +11,7 @@ import com.practicum.playlistmaker.databinding.FragmentMediaBinding
 
 class MediaFragment : Fragment() {
     private lateinit var mediaBinding: FragmentMediaBinding
-    private lateinit var tabMediator: TabLayoutMediator
+    private var tabMediator: TabLayoutMediator? = null
     private val titles = listOf(
         R.string.favorite_title,
         R.string.playlist_title
@@ -33,12 +33,12 @@ class MediaFragment : Fragment() {
             tabMediator = TabLayoutMediator(tabLayout, viewPager) { tab, pos ->
                 tab.text = getString(titles[pos])
             }
-            tabMediator.attach()
+            tabMediator?.attach()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        tabMediator.detach()
+        tabMediator?.detach()
     }
 }

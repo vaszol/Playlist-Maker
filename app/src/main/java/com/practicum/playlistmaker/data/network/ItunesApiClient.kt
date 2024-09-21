@@ -6,25 +6,28 @@ import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.data.NetworkClient
 import com.practicum.playlistmaker.data.dto.Response
 import com.practicum.playlistmaker.data.dto.TrackRequest
-import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ItunesApiClient(private val itunesApi: ItunesApi, private val context: Context) :
     NetworkClient {
 
-    override fun doRequest(dto: Any): Response {
-        try {
-            if (!isConnected()) {
-                return Response().apply { resultCode = -1 }
+    override suspend fun doRequest(dto: Any): Response {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (!isConnected()) {
+                    Response().apply { resultCode = -1 }
+                }
+                if (dto is TrackRequest) {
+                    itunesApi.search(dto.expression).apply {
+                        resultCode = 200
+                    }
+                } else {
+                    Response().apply { resultCode = 400 }
+                }
+            } catch (exception: Exception) {
+                Response().apply { resultCode = 400 }
             }
-            if (dto is TrackRequest) {
-                val resp = itunesApi.search(dto.expression).execute()
-                val body = resp.body() ?: Response()
-                return body.apply { resultCode = resp.code() }
-            } else {
-                return Response().apply { resultCode = 400 }
-            }
-        } catch (exception: IOException) {
-            return Response().apply { resultCode = 400 }
         }
     }
 

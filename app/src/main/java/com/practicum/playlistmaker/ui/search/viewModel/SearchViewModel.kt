@@ -1,17 +1,17 @@
 package com.practicum.playlistmaker.ui.search.viewModel
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 import com.practicum.playlistmaker.domain.api.TrackInteractor
-import com.practicum.playlistmaker.domain.models.Resource
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.ui.search.SearchScreenEvent
 import com.practicum.playlistmaker.ui.search.SearchScreenState
 import com.practicum.playlistmaker.ui.search.SingleLiveEvent
+import com.practicum.playlistmaker.ui.util.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val trackInteractor: TrackInteractor,
@@ -23,10 +23,20 @@ class SearchViewModel(
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
+    private val searchDebounce =
+        debounce<Unit>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { _ ->
+            search()
+        }
+
+    private val clickDebounce =
+        debounce<Track>(CLICK_DEBOUNCE_DELAY, viewModelScope, false) { track ->
+            sharedPreferencesInteractor.addHistory(track)
+            sharedPreferencesInteractor.setTrackToPlay(track)
+            _state.value = getCurrentScreenState().copy(trackSelected = track)
+            event.value = SearchScreenEvent.OpenPlayerScreen
+        }
+
     private var searchText: String = ""
-    private val searchRunnable = Runnable { search() }
-    private val handler = Handler(Looper.getMainLooper())
-    private var isClickAllowed = true
     private val _state = MutableLiveData<SearchScreenState>()
     val state: LiveData<SearchScreenState> = _state
     val event = SingleLiveEvent<SearchScreenEvent>()
@@ -40,10 +50,7 @@ class SearchViewModel(
         searchText = text
     }
 
-    fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-    }
+    fun searchDebounce() = searchDebounce(Unit)
 
     fun focusChange(hasFocus: Boolean) {
         if (hasFocus && searchText.isEmpty()) showHistory() else goneHistory()
@@ -55,29 +62,22 @@ class SearchViewModel(
     }
 
     fun search() {
-        handler.removeCallbacks(searchRunnable)
         if (searchText.isNotEmpty()) {
             goneHistory()
             _state.postValue(SearchScreenState(searchPgbVisible = true, tracks = mutableListOf()))
-            trackInteractor.searchTracks(searchText) {
-                when (it) {
-                    is Resource.Error -> messageFail()
-                    is Resource.Success ->
-                        if (it.data.isNullOrEmpty()) messageEmpty()
-                        else messageOk(it)
-                }
+
+            viewModelScope.launch {
+                trackInteractor.searchTracks(searchText)
+                    .collect { pair ->
+                        if (pair.second != null) messageFail()
+                        else if (pair.first.isNullOrEmpty()) messageEmpty()
+                        else messageOk(pair.first!!)
+                    }
             }
         }
     }
 
-    fun onTrackClick(track: Track) {
-        if (clickDebounce()) {
-            sharedPreferencesInteractor.addHistory(track)
-            sharedPreferencesInteractor.setTrackToPlay(track)
-            _state.value = getCurrentScreenState().copy(trackSelected = track)
-            event.value = SearchScreenEvent.OpenPlayerScreen
-        }
-    }
+    fun onTrackClick(track: Track) = clickDebounce(track)
 
     private fun goneHistory() {
         _state.postValue(
@@ -87,6 +87,11 @@ class SearchViewModel(
                 messageVisible = false,
             )
         )
+    }
+
+    fun showTracks() {
+        if (getCurrentScreenState().trackSelected == null == !getCurrentScreenState().searchHistoryVisible)
+            showHistory()
     }
 
     fun showHistory() {
@@ -126,8 +131,7 @@ class SearchViewModel(
         )
     }
 
-    private fun messageOk(response: Resource<List<Track>>) {
-        val tracks = response.data ?: listOf()
+    private fun messageOk(tracks: List<Track>) {
         _state.postValue(
             SearchScreenState(
                 tracks = tracks,
@@ -135,18 +139,6 @@ class SearchViewModel(
                 searchPgbVisible = false,
             )
         )
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed(
-                { isClickAllowed = true },
-                CLICK_DEBOUNCE_DELAY
-            )
-        }
-        return current
     }
 
     private fun getCurrentScreenState() = state.value ?: SearchScreenState()
