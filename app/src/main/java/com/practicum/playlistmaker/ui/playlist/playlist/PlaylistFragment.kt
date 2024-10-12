@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
 import com.practicum.playlistmaker.ui.playlist.playlist.viewModel.PlaylistViewModel
@@ -22,6 +23,7 @@ class PlaylistFragment : Fragment() {
     ): View {
         binding = FragmentPlaylistBinding.inflate(inflater)
         binding.apply {
+            messageBtn.setOnClickListener { viewModel.onCreateBtnClick() }
             messageText.text = getString(R.string.playlist_empty)
             messageImg.setImageResource(
                 if (Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) R.drawable.ic_message_empty_dark
@@ -36,6 +38,11 @@ class PlaylistFragment : Fragment() {
         viewModel.playlist.observe(viewLifecycleOwner) {
             binding.messageImg.isVisible = it.isEmpty()
             binding.messageText.isVisible = it.isEmpty()
+        }
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                PlaylistsScreenEvent.NavigateToCreatePlaylist -> findNavController().navigate(R.id.action_mediaFragment_to_createFragment)
+            }
         }
     }
 

@@ -3,6 +3,7 @@
     <string name="menu_search">Поиск</string>
     <string name="menu_media">Медиатека</string>
     <string name="menu_setting">Настройки</string>
+    <string name="menu_create">Новый плейлист</string>
     <string name="setting_theme">Темная тема</string>
     <string name="setting_share">Поделиться приложением</string>
     <string name="setting_support">Написать в поддержку</string>
@@ -29,4 +30,8 @@
     <string name="playlist_title">Плейлисты</string>
     <string name="playlist_empty">Вы не создали \n ни одного плейлиста</string>
     <string name="playlist_create">Новый плейлист</string>
+    <string name="playlist_photo_picker">фото пикер</string>
+    <string name="playlist_name">Название*</string>
+    <string name="playlist_description">Описание</string>
+    <string name="playlist_create_btn">Создать</string>
 </resources>
