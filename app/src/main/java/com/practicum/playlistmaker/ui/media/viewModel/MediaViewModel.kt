@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
+import com.practicum.playlistmaker.domain.db.TracksDbInteractor
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.ui.media.MediaScreenState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,13 +19,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class MediaViewModel(
+    private val tracksDbInteractor: TracksDbInteractor,
     private val creatorPlayer: PlayerInteractor,
     sharedPreferencesInteractor: SharedPreferencesInteractor,
 ) : ViewModel() {
-
-    companion object {
-        private const val TIMER_STEP_MILLIS = 300L
-    }
 
     private var mediaPlayer = MediaPlayer()
     private var timerJob: Job? = null
@@ -31,8 +30,24 @@ class MediaViewModel(
     private val _state = MutableLiveData<MediaScreenState>()
     val state: LiveData<MediaScreenState> = _state
 
+    init {
+        subscribeOnLiked()
+    }
+
+    private fun subscribeOnLiked() {
+        viewModelScope.launch(Dispatchers.IO) {
+            tracksDbInteractor.getLikedTracks().collect { liked ->
+                track?.let {
+                    track = it.copy(isLiked = it.trackId in liked.map { t -> t.trackId }.toSet())
+                }
+                _state.postValue(getCurrentScreenState().copy(isLiked = track?.isLiked ?: false))
+            }
+        }
+    }
+
     fun setTrack() {
-        _state.postValue(MediaScreenState(track = track))
+        _state.value =
+            getCurrentScreenState().copy(track = track, isLiked = track?.isLiked ?: false)
         preparePlayer()
     }
 
@@ -43,6 +58,17 @@ class MediaViewModel(
         else
             _state.value = getCurrentScreenState().copy(playerState = PlayerStateEnum.STATE_PAUSED)
         startTimer()
+    }
+
+    fun like() {
+        viewModelScope.launch(Dispatchers.IO) {
+            track?.apply {
+                if (isLiked)
+                    tracksDbInteractor.deleteFromLiked(this)
+                else
+                    tracksDbInteractor.addToLiked(this)
+            }
+        }
     }
 
     fun pause() {
@@ -92,4 +118,8 @@ class MediaViewModel(
     }
 
     private fun getCurrentScreenState() = _state.value ?: MediaScreenState()
+
+    companion object {
+        private const val TIMER_STEP_MILLIS = 300L
+    }
 }

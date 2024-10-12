@@ -4,13 +4,15 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import com.practicum.playlistmaker.data.db.AppDatabase
 import com.practicum.playlistmaker.domain.api.SharedPreferencesRepository
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.domain.SharedPreferencesConverter
 
 class SharedPreferencesRepositoryImpl(
     private val sharedPreferences: SharedPreferences,
-    private val sharedPreferencesConverter: SharedPreferencesConverter
+    private val sharedPreferencesConverter: SharedPreferencesConverter,
+    private val appDatabase: AppDatabase
 ) : SharedPreferencesRepository {
 
     private var track: Track? = null
@@ -24,7 +26,7 @@ class SharedPreferencesRepositoryImpl(
         val history: MutableList<Track> = getFromHistory().toMutableList()
         if (history.isNotEmpty()) {
             if (history.any { it.trackId == track.trackId }) {
-                history.remove(track)
+                history.removeIf { historyTrack -> historyTrack.trackId == track.trackId }
             } else {
                 while (history.size >= 10) history.removeFirst()
             }
@@ -35,8 +37,10 @@ class SharedPreferencesRepositoryImpl(
     }
 
     override fun getFromHistory(): MutableList<Track> {
+        val likedIds = appDatabase.trackDao().getTracksIds().toSet()
         return sharedPreferences.getString(SEARCH_HISTORY, null)?.let {
             sharedPreferencesConverter.convertJsonToList(it)
+                .map { it.copy(isLiked = it.trackId in likedIds) }
         }?.toMutableList() ?: mutableListOf()
     }
 
