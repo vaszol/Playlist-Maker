@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.domain.ExternalStorageRepository
 import com.practicum.playlistmaker.domain.PlaylistInteractor
 import com.practicum.playlistmaker.domain.PlaylistRepository
 import com.practicum.playlistmaker.domain.models.Playlist
+import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 class PlaylistInteractorImpl(
@@ -24,4 +25,6 @@ class PlaylistInteractorImpl(
         )
         playlistRepository.addPlaylist(playlist)
     }
+
+    override fun getPlaylists(): Flow<List<Playlist>> = playlistRepository.getPlaylistsFlow()
 }

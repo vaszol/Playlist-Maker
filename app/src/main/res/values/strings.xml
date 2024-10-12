@@ -34,4 +34,12 @@
     <string name="playlist_name">Название*</string>
     <string name="playlist_description">Описание</string>
     <string name="playlist_create_btn">Создать</string>
+    <string name="playlist_image_description">обложка плейлиста</string>
+    <plurals name="track">
+        <item quantity="one">трек</item>
+        <item quantity="few">трека</item>
+        <item quantity="many">треков</item>
+        <item quantity="other">треков</item>
+    </plurals>
+    <string name="playlist_created_snackbar">Плейлист %1$s создан</string>
 </resources>

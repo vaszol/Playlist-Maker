@@ -29,7 +29,7 @@ val ViewModelModule = module {
     }
 
     viewModel<PlaylistViewModel> {
-        PlaylistViewModel(get())
+        PlaylistViewModel(get(), get())
     }
 
     viewModel<CreateViewModel> {
