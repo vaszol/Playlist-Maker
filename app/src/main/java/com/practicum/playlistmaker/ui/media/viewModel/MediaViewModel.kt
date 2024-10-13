@@ -5,33 +5,44 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.domain.PlaylistInteractor
 import com.practicum.playlistmaker.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 import com.practicum.playlistmaker.domain.db.TracksDbInteractor
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
+import com.practicum.playlistmaker.domain.models.Playlist
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.ui.media.MediaScreenState
+import com.practicum.playlistmaker.ui.media.PlayerScreenEvent
+import com.practicum.playlistmaker.ui.search.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class MediaViewModel(
     private val tracksDbInteractor: TracksDbInteractor,
     private val creatorPlayer: PlayerInteractor,
+    private val playlistInteractor: PlaylistInteractor,
     sharedPreferencesInteractor: SharedPreferencesInteractor,
 ) : ViewModel() {
 
     private var mediaPlayer = MediaPlayer()
     private var timerJob: Job? = null
-    private var track: Track? = sharedPreferencesInteractor.getTrackToPlay()
+    var track: Track? = sharedPreferencesInteractor.getTrackToPlay()
     private val _state = MutableLiveData<MediaScreenState>()
     val state: LiveData<MediaScreenState> = _state
+    private val _playlists = MutableLiveData<List<Playlist>>(listOf())
+    val playlists: LiveData<List<Playlist>> = _playlists
+    val event = SingleLiveEvent<PlayerScreenEvent>()
 
     init {
         subscribeOnLiked()
+        subscribeOnPlaylist()
     }
 
     private fun subscribeOnLiked() {
@@ -42,6 +53,12 @@ class MediaViewModel(
                 }
                 _state.postValue(getCurrentScreenState().copy(isLiked = track?.isLiked ?: false))
             }
+        }
+    }
+
+    private fun subscribeOnPlaylist() {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.getPlaylists().collectLatest { _playlists.postValue(it) }
         }
     }
 
@@ -119,7 +136,31 @@ class MediaViewModel(
 
     private fun getCurrentScreenState() = _state.value ?: MediaScreenState()
 
+    fun add() {
+        event.value = PlayerScreenEvent.OpenBottomSheet
+    }
+
     companion object {
         private const val TIMER_STEP_MILLIS = 300L
+    }
+
+    fun onPlaylistClicked(playlist: Playlist) {
+        track?.let {
+            if (it.trackId !in playlist.tracksIds.toSet()) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    playlistInteractor.addTrackToPlaylist(playlist, it)
+                    withContext(Dispatchers.Main) {
+                        event.value = PlayerScreenEvent.CloseBottomSheet
+                        event.value = PlayerScreenEvent.ShowTrackAddedMessage(playlist.name)
+                    }
+                }
+            } else {
+                event.value = PlayerScreenEvent.ShowTrackAlreadyInPlaylistMessage(playlist.name)
+            }
+        }
+    }
+
+    fun onCreateClicker() {
+        event.postValue(PlayerScreenEvent.NavigateToCreatePlaylistScreen)
     }
 }

@@ -42,4 +42,7 @@
         <item quantity="other">треков</item>
     </plurals>
     <string name="playlist_created_snackbar">Плейлист %1$s создан</string>
+    <string name="playlist_added">Добавлено в плейлист %1$s</string>
+    <string name="playlist_already_added">Трек уже добавлен в плейлист %1$s</string>
+    <string name="bottom_sheet_title">Добавить в плейлист</string>
 </resources>

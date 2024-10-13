@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.domain.ExternalStorageRepository
 import com.practicum.playlistmaker.domain.PlaylistInteractor
 import com.practicum.playlistmaker.domain.PlaylistRepository
 import com.practicum.playlistmaker.domain.models.Playlist
+import com.practicum.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -27,4 +28,8 @@ class PlaylistInteractorImpl(
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> = playlistRepository.getPlaylistsFlow()
+
+    override suspend fun addTrackToPlaylist(playlist: Playlist, track: Track) {
+        playlistRepository.addTrackToPlaylist(playlist, track)
+    }
 }

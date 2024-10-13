@@ -33,5 +33,5 @@ val RepositoryModule = module {
 
     single<ExternalStorageRepository> { ExternalStorageRepositoryImpl(get()) }
 
-    single<PlaylistRepository> { PlaylistRepositoryImpl(get()) }
+    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get()) }
 }

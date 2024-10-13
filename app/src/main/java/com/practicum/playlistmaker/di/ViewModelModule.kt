@@ -13,7 +13,7 @@ import org.koin.dsl.module
 val ViewModelModule = module {
 
     viewModel<MediaViewModel> {
-        MediaViewModel(get(), get(), get())
+        MediaViewModel(get(), get(), get(), get())
     }
 
     viewModel<SearchViewModel> {
