@@ -2,41 +2,28 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/light_mode_"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.media.MediaActivity">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/mediaFragmentContainerView"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/player_nav_graph" />
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/media_toolbar"
-        style="@style/Toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:navigationIcon="@drawable/arrow"
-        app:titleTextColor="@color/toolbarTextMenu"
-        tools:ignore="MissingConstraints" />
+    android:orientation="vertical">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/media_toolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:context=".ui.media.fragment.PlayerFragment">
 
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/media_toolbar"
+                style="@style/Toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/arrow"
+                app:titleTextColor="@color/toolbarTextMenu"
+                tools:ignore="MissingConstraints" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/leftBorder"
@@ -62,7 +49,7 @@
                 app:layout_constraintDimensionRatio="h,1:1"
                 app:layout_constraintEnd_toStartOf="@id/rightBorder"
                 app:layout_constraintStart_toStartOf="@id/leftBorder"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/media_toolbar" />
 
             <TextView
                 android:id="@+id/track_name"

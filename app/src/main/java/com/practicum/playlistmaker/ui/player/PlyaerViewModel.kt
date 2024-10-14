@@ -1,10 +1,11 @@
-package com.practicum.playlistmaker.ui.media.viewModel
+package com.practicum.playlistmaker.ui.player
 
 import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.domain.NavigationInteractor
 import com.practicum.playlistmaker.domain.PlaylistInteractor
 import com.practicum.playlistmaker.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
@@ -12,8 +13,6 @@ import com.practicum.playlistmaker.domain.db.TracksDbInteractor
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 import com.practicum.playlistmaker.domain.models.Playlist
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.ui.media.MediaScreenState
-import com.practicum.playlistmaker.ui.media.PlayerScreenEvent
 import com.practicum.playlistmaker.ui.search.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,18 +23,19 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaViewModel(
+class PlyaerViewModel(
     private val tracksDbInteractor: TracksDbInteractor,
     private val creatorPlayer: PlayerInteractor,
     private val playlistInteractor: PlaylistInteractor,
+    private val navigationInteractor: NavigationInteractor,
     sharedPreferencesInteractor: SharedPreferencesInteractor,
 ) : ViewModel() {
 
     private var mediaPlayer = MediaPlayer()
     private var timerJob: Job? = null
     var track: Track? = sharedPreferencesInteractor.getTrackToPlay()
-    private val _state = MutableLiveData<MediaScreenState>()
-    val state: LiveData<MediaScreenState> = _state
+    private val _state = MutableLiveData<PlayerScreenState>()
+    val state: LiveData<PlayerScreenState> = _state
     private val _playlists = MutableLiveData<List<Playlist>>(listOf())
     val playlists: LiveData<List<Playlist>> = _playlists
     val event = SingleLiveEvent<PlayerScreenEvent>()
@@ -134,7 +134,7 @@ class MediaViewModel(
         }
     }
 
-    private fun getCurrentScreenState() = _state.value ?: MediaScreenState()
+    private fun getCurrentScreenState() = _state.value ?: PlayerScreenState()
 
     fun add() {
         event.value = PlayerScreenEvent.OpenBottomSheet
@@ -162,5 +162,13 @@ class MediaViewModel(
 
     fun onCreateClicker() {
         event.postValue(PlayerScreenEvent.NavigateToCreatePlaylistScreen)
+    }
+
+    fun showNavigation() {
+        navigationInteractor.setBottomNavigationVisibility(true)
+    }
+
+    fun hideNavigation() {
+        navigationInteractor.setBottomNavigationVisibility(false)
     }
 }

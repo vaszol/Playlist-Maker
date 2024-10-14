@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui.media
+package com.practicum.playlistmaker.ui.player
 
 sealed class PlayerScreenEvent {
     object OpenBottomSheet : PlayerScreenEvent()
