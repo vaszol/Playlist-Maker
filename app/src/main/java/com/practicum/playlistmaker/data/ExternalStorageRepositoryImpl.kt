@@ -28,7 +28,7 @@ class ExternalStorageRepositoryImpl(private val context: Context) : ExternalStor
         return file.toString()
     }
 
-    companion object {
+    private companion object {
         const val DIRECTORY_NAME = "playlist_maker"
         const val FILE_NAME = "playlist_cover_"
         const val FILE_EXTENSION = ".jpg"

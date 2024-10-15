@@ -42,7 +42,7 @@
                 android:layout_marginTop="32dp"
                 android:hint="@string/playlist_name"
                 android:imeOptions="actionNext"
-                android:textColorHint="@color/black"
+                android:textColorHint="@color/trackTextPrime"
                 app:boxStrokeColor="@color/box_stroke_color"
                 app:hintTextColor="@color/blue">
 
@@ -60,10 +60,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="170dp"
                 android:hint="@string/playlist_description"
                 android:imeOptions="actionNext"
-                android:textColorHint="@color/black"
+                android:textColorHint="@color/trackTextPrime"
                 app:boxStrokeColor="@color/box_stroke_color"
                 app:hintTextColor="@color/blue">
 

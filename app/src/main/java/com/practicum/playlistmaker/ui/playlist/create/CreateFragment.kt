@@ -12,6 +12,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentCreateBinding
 import com.practicum.playlistmaker.ui.load
 import com.practicum.playlistmaker.ui.playlist.create.viewModel.CreateViewModel
@@ -72,10 +73,10 @@ class CreateFragment : Fragment() {
 
     private fun showConfirmDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setNegativeButton("Отмена") { dialog, _ -> dialog.dismiss() }
-            .setPositiveButton("Завершить") { _, _ -> viewModel.onBackPressedConfirmed() }
+            .setTitle(R.string.favorite_dialog_title)
+            .setMessage(R.string.favorite_dialog_message)
+            .setNegativeButton(R.string.favorite_dialog_negative) { dialog, _ -> dialog.dismiss() }
+            .setPositiveButton(R.string.favorite_dialog_positive) { _, _ -> viewModel.onBackPressedConfirmed() }
             .show()
     }
 
