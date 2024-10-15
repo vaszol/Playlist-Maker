@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.ui.playlist.favorite
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentFavoriteBinding
-import com.practicum.playlistmaker.ui.media.MediaActivity
 import com.practicum.playlistmaker.ui.playlist.favorite.viewModel.FavoriteViewModel
 import com.practicum.playlistmaker.ui.search.TracksAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -49,12 +48,7 @@ class FavoriteFragment : Fragment() {
 
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is FavoriteScreenEvent.OpenPlayerScreen -> startActivity(
-                    Intent(
-                        requireContext(),
-                        MediaActivity::class.java
-                    )
-                )
+                FavoriteScreenEvent.OpenPlayerScreen -> findNavController().navigate(R.id.action_mediaFragment_to_playerFragment)
             }
         }
     }
