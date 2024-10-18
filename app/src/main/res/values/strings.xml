@@ -3,6 +3,7 @@
     <string name="menu_search">Поиск</string>
     <string name="menu_media">Медиатека</string>
     <string name="menu_setting">Настройки</string>
+    <string name="menu_create">Новый плейлист</string>
     <string name="setting_theme">Темная тема</string>
     <string name="setting_share">Поделиться приложением</string>
     <string name="setting_support">Написать в поддержку</string>
@@ -29,4 +30,23 @@
     <string name="playlist_title">Плейлисты</string>
     <string name="playlist_empty">Вы не создали \n ни одного плейлиста</string>
     <string name="playlist_create">Новый плейлист</string>
+    <string name="playlist_photo_picker">фото пикер</string>
+    <string name="playlist_name">Название*</string>
+    <string name="playlist_description">Описание</string>
+    <string name="playlist_create_btn">Создать</string>
+    <string name="playlist_image_description">обложка плейлиста</string>
+    <plurals name="track">
+        <item quantity="one">трек</item>
+        <item quantity="few">трека</item>
+        <item quantity="many">треков</item>
+        <item quantity="other">треков</item>
+    </plurals>
+    <string name="playlist_created_snackbar">Плейлист %1$s создан</string>
+    <string name="playlist_added">Добавлено в плейлист %1$s</string>
+    <string name="playlist_already_added">Трек уже добавлен в плейлист %1$s</string>
+    <string name="favorite_dialog_title">Завершить создание плейлиста?</string>
+    <string name="favorite_dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="favorite_dialog_negative">Отмена</string>
+    <string name="favorite_dialog_positive">Завершить</string>
+    <string name="bottom_sheet_title">Добавить в плейлист</string>
 </resources>

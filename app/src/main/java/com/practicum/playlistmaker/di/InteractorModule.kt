@@ -1,10 +1,14 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.domain.NavigationInteractor
+import com.practicum.playlistmaker.domain.PlaylistInteractor
 import com.practicum.playlistmaker.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.db.TracksDbInteractor
+import com.practicum.playlistmaker.domain.impl.NavigationInteractorImpl
 import com.practicum.playlistmaker.domain.impl.PlayerInteractorlmpl
+import com.practicum.playlistmaker.domain.impl.PlaylistInteractorImpl
 import com.practicum.playlistmaker.domain.impl.SharedPreferencesInteractorImpl
 import com.practicum.playlistmaker.domain.impl.TrackInteractorImpl
 import com.practicum.playlistmaker.domain.impl.TracksDbInteractorImpl
@@ -25,5 +29,13 @@ val InteractorModule = module {
 
     single<TracksDbInteractor> {
         TracksDbInteractorImpl(get())
+    }
+
+    single<NavigationInteractor> {
+        NavigationInteractorImpl(get())
+    }
+
+    single<PlaylistInteractor> {
+        PlaylistInteractorImpl(get(), get())
     }
 }
