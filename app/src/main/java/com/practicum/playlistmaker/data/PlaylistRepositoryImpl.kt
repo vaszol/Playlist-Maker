@@ -29,4 +29,17 @@ class PlaylistRepositoryImpl(
         appDatabase.playlistDao().updatePlaylist(playlistDbConvertor.mapToEntity(newPlaylist))
         appDatabase.trackDao().addTrack(trackDbConvertor.mapToEntity(track))
     }
+
+    override fun getPlaylist(playlistId: String): Flow<Playlist?> {
+        return appDatabase.playlistDao().getPlaylistFlow(playlistId).map { entity ->
+            entity?.let { playlistDbConvertor.map(entity) }
+        }
+    }
+
+    override fun getTracksByIds(tracksIds: List<String>): Flow<List<Track>> {
+        return appDatabase.trackDao().getTracksByIds(tracksIds).map { entities ->
+            entities.sortedByDescending { it.createdAt }
+                .map { track -> trackDbConvertor.map(track) }
+        }
+    }
 }

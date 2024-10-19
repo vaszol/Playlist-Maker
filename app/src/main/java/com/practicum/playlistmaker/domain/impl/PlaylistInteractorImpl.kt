@@ -7,6 +7,7 @@ import com.practicum.playlistmaker.domain.PlaylistRepository
 import com.practicum.playlistmaker.domain.models.Playlist
 import com.practicum.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import java.util.UUID
 
 class PlaylistInteractorImpl(
@@ -31,5 +32,13 @@ class PlaylistInteractorImpl(
 
     override suspend fun addTrackToPlaylist(playlist: Playlist, track: Track) {
         playlistRepository.addTrackToPlaylist(playlist, track)
+    }
+
+    override fun getPlaylistById(playlistId: String): Flow<Playlist> {
+        return playlistRepository.getPlaylist(playlistId).filterNotNull()
+    }
+
+    override fun getTracksByIds(tracksIds: List<String>): Flow<List<Track>> {
+        return playlistRepository.getTracksByIds(tracksIds)
     }
 }

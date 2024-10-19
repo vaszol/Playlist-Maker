@@ -16,6 +16,7 @@ class SharedPreferencesRepositoryImpl(
 ) : SharedPreferencesRepository {
 
     private var track: Track? = null
+    private var playlistId: String? = null
 
     init {
         switchTheme(getThemePreferences())
@@ -28,7 +29,7 @@ class SharedPreferencesRepositoryImpl(
             if (history.any { it.trackId == track.trackId }) {
                 history.removeIf { historyTrack -> historyTrack.trackId == track.trackId }
             } else {
-                while (history.size >= 10) history.removeFirst()
+                while (history.size >= 10) history.removeAt(0)
             }
         }
         history.add(track)
@@ -75,6 +76,18 @@ class SharedPreferencesRepositoryImpl(
             }
         )
         sharedPreferences.edit { putBoolean(DARK_THEME_KEY, darkTheme) }
+    }
+
+    override fun setPlaylistToInfo(playlistId: String) {
+        this.playlistId = playlistId
+    }
+
+    override fun getPlaylistToPlay(): String? {
+        return playlistId.let {
+            val currentId = playlistId
+            playlistId = null
+            currentId
+        }
     }
 
     companion object {

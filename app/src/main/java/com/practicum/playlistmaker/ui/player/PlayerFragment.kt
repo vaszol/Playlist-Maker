@@ -46,7 +46,7 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.hideNavigation()
         viewModel.setTrack()
-        viewModel.state.observe(this) {
+        viewModel.state.observe(viewLifecycleOwner) {
             it.track?.let(::setTrackData)
             binding.trackTime.text = it.trackTime.ifEmpty { "00:00" }
             it.playerState.let { playerStateEnum: PlayerStateEnum ->
@@ -80,8 +80,8 @@ class PlayerFragment : Fragment() {
             bottomAdapter = BottomAdapter(viewModel::onPlaylistClicked)
             playlists.adapter = bottomAdapter
         }
-        viewModel.playlists.observe(this) { bottomAdapter.submitList(it) }
-        viewModel.event.observe(this) { it ->
+        viewModel.playlists.observe(viewLifecycleOwner) { bottomAdapter.submitList(it) }
+        viewModel.event.observe(viewLifecycleOwner) { it ->
             when (it) {
                 is PlayerScreenEvent.OpenBottomSheet -> {
                     binding.bottomSheet.let {

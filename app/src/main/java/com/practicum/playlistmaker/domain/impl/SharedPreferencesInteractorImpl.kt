@@ -34,4 +34,12 @@ class SharedPreferencesInteractorImpl(private val repo: SharedPreferencesReposit
     override fun switchTheme(darkTheme: Boolean) {
         repo.switchTheme(darkTheme)
     }
+
+    override fun setPlaylistToInfo(playlistId: String) {
+        repo.setPlaylistToInfo(playlistId)
+    }
+
+    override fun getPlaylistToPlay(): String? {
+        return repo.getPlaylistToPlay()
+    }
 }

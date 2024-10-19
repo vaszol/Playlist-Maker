@@ -21,4 +21,7 @@ interface TrackDao {
 
     @Query("SELECT trackId FROM likedTracks")
     fun getTracksIds(): List<String>
+
+    @Query("SELECT * FROM likedTracks WHERE trackId IN (:tracksIds)")
+    fun getTracksByIds(tracksIds: List<String>): Flow<List<TrackEntity>>
 }

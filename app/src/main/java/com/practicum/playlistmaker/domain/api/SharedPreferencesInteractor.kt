@@ -16,4 +16,8 @@ interface SharedPreferencesInteractor {
     fun getThemePreferences(): Boolean
 
     fun switchTheme(darkTheme: Boolean)
+
+    fun setPlaylistToInfo(playlistId: String)
+
+    fun getPlaylistToPlay(): String?
 }

@@ -49,4 +49,7 @@
     <string name="favorite_dialog_negative">Отмена</string>
     <string name="favorite_dialog_positive">Завершить</string>
     <string name="bottom_sheet_title">Добавить в плейлист</string>
+<!--    <string name="playlist_info_track_img_description">фото пикер</string>-->
+    <string name="playlist_info_share_img_description">Поделиться</string>
+    <string name="playlist_info_menu_img_description">Меню</string>
 </resources>

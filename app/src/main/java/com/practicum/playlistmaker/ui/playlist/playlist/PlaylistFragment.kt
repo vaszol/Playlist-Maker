@@ -56,6 +56,7 @@ class PlaylistFragment : Fragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 PlaylistsScreenEvent.NavigateToCreatePlaylist -> findNavController().navigate(R.id.action_mediaFragment_to_createFragment)
+                PlaylistsScreenEvent.NavigateToPlaylistInfo -> findNavController().navigate(R.id.action_mediaFragment_to_playlistInfoFragment)
             }
         }
     }
