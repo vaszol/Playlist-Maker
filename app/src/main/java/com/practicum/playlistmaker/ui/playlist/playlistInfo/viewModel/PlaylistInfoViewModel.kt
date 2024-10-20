@@ -12,6 +12,7 @@ import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.ui.playlist.playlistInfo.PlaylistInfoScreenEvent
 import com.practicum.playlistmaker.ui.playlist.playlistInfo.PlaylistInfoScreenState
 import com.practicum.playlistmaker.ui.search.SingleLiveEvent
+import com.practicum.playlistmaker.ui.util.debounce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,14 +29,23 @@ class PlaylistInfoViewModel(
     private val _state = MutableLiveData<PlaylistInfoScreenState>()
     val state: LiveData<PlaylistInfoScreenState> = _state
     val event = SingleLiveEvent<PlaylistInfoScreenEvent>()
+    private var trackIdForDeletion: String? = null
 
     init {
         subscribeOnPlaylist()
     }
 
+    private val clickDebounce =
+        debounce<Track>(CLICK_DEBOUNCE_DELAY, viewModelScope, false) { track ->
+            viewModelScope.launch(Dispatchers.IO) {
+                sharedPreferencesInteractor.addHistory(track)
+                sharedPreferencesInteractor.setTrackToPlay(track)
+            }
+            event.value = PlaylistInfoScreenEvent.OpenPlayerScreen
+        }
+
     fun onBackPressed() {
         event.postValue(PlaylistInfoScreenEvent.NavigateBack)
-        navigationInteractor.setBottomNavigationVisibility(true)
     }
 
     private fun subscribeOnPlaylist() {
@@ -64,7 +74,8 @@ class PlaylistInfoViewModel(
                                     SimpleDateFormat("mm", Locale.getDefault())
                                         .format(it.sumOf { track: Track -> track.trackTimeMillis }),
                                     it.size
-                                )
+                                ),
+                                tracks = it
                             )
                         )
                     }
@@ -73,4 +84,33 @@ class PlaylistInfoViewModel(
     }
 
     private fun getCurrentScreenState() = _state.value ?: PlaylistInfoScreenState()
+
+    fun onTrackClick(track: Track) = clickDebounce(track)
+
+    fun onLongClick(trackId: String) {
+        trackIdForDeletion = trackId
+        event.value = PlaylistInfoScreenEvent.ShowBackConfirmationDialog
+    }
+
+    fun hideNavigation() {
+        navigationInteractor.setBottomNavigationVisibility(false)
+    }
+
+    fun onDeleteTrackConfirmed() {
+        playlistId?.apply {
+            trackIdForDeletion?.let {
+                viewModelScope.launch(Dispatchers.IO) {
+                    playlistInteractor.deleteTrackFromPlaylist(this@apply, it)
+                }.invokeOnCompletion { trackIdForDeletion = null }
+            }
+        }
+    }
+
+    fun onDeleteTrackDialogDismiss() {
+        trackIdForDeletion = null
+    }
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 100L
+    }
 }

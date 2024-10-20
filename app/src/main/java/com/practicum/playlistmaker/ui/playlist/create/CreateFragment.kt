@@ -39,6 +39,7 @@ class CreateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.hideNavigation()
         binding.apply {
             createToolbar.setNavigationOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
             photoPicker.setOnClickListener {

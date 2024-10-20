@@ -106,7 +106,6 @@ class PlayerFragment : Fragment() {
                 }
 
                 is PlayerScreenEvent.NavigateToCreatePlaylistScreen -> {
-                    viewModel.hideNavigation()
                     findNavController().navigate(R.id.action_playerFragment_to_createFragment)
                 }
             }
@@ -118,7 +117,6 @@ class PlayerFragment : Fragment() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (isEnabled) {
-                    viewModel.showNavigation()
                     findNavController().popBackStack()
                 }
             }

@@ -44,7 +44,9 @@ val DataModule = module {
     }
 
     single {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "PlaylistMaker.db").build()
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "PlaylistMaker.db")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     factory<Gson> { Gson() }

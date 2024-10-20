@@ -32,12 +32,10 @@ class PlaylistViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 sharedPreferencesInteractor.setPlaylistToInfo(playlistId)
             }
-            navigationInteractor.setBottomNavigationVisibility(false)
             event.value = PlaylistsScreenEvent.NavigateToPlaylistInfo
         }
 
     fun onCreateBtnClick() {
-        navigationInteractor.setBottomNavigationVisibility(false)
         event.value = PlaylistsScreenEvent.NavigateToCreatePlaylist
     }
 
@@ -47,6 +45,10 @@ class PlaylistViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             playlistInteractor.getPlaylists().collect { _playlist.postValue(it) }
         }
+    }
+
+    fun showNavigation() {
+        navigationInteractor.setBottomNavigationVisibility(true)
     }
 
     companion object {

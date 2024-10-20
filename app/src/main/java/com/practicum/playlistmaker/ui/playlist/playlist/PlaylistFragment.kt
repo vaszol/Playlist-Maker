@@ -47,6 +47,7 @@ class PlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.showNavigation()
         viewModel.playlist.observe(viewLifecycleOwner) {
             playlistAdapter.submitList(it)
             binding.emptyGroup.isVisible = it.isEmpty()

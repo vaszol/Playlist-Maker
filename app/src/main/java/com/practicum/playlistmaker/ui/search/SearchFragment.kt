@@ -34,6 +34,7 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.showNavigation()
         adapter = TracksAdapter(viewModel::onTrackClick)
         searchBinding.apply {
             trackRecyclerView.adapter = adapter

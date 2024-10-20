@@ -18,7 +18,7 @@ val ViewModelModule = module {
     }
 
     viewModel<SearchViewModel> {
-        SearchViewModel(get(), get())
+        SearchViewModel(get(), get(), get())
     }
 
     viewModel<SettingsViewModel> {
@@ -26,7 +26,7 @@ val ViewModelModule = module {
     }
 
     viewModel<FavoriteViewModel> {
-        FavoriteViewModel(get(), get())
+        FavoriteViewModel(get(), get(), get())
     }
 
     viewModel<PlaylistViewModel> {

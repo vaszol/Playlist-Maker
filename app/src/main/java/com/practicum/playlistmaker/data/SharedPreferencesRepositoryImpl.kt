@@ -38,7 +38,7 @@ class SharedPreferencesRepositoryImpl(
     }
 
     override fun getFromHistory(): MutableList<Track> {
-        val likedIds = appDatabase.trackDao().getTracksIds().toSet()
+        val likedIds = appDatabase.likedTrackDao().getTracksIds().toSet()
         return sharedPreferences.getString(SEARCH_HISTORY, null)?.let {
             sharedPreferencesConverter.convertJsonToList(it)
                 .map { it.copy(isLiked = it.trackId in likedIds) }

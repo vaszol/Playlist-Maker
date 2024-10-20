@@ -58,7 +58,6 @@ class CreateViewModel(
             event.value = CreateEvent.ShowBackConfirmationDialog
         } else {
             event.value = CreateEvent.NavigateBack
-            navigationInteractor.setBottomNavigationVisibility(true)
         }
     }
 
@@ -66,6 +65,9 @@ class CreateViewModel(
 
     private fun navigateBack() {
         event.value = CreateEvent.NavigateBack
-        navigationInteractor.setBottomNavigationVisibility(true)
+    }
+
+    fun hideNavigation() {
+        navigationInteractor.setBottomNavigationVisibility(false)
     }
 }

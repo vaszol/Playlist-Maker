@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.domain.NavigationInteractor
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 import com.practicum.playlistmaker.domain.db.TracksDbInteractor
 import com.practicum.playlistmaker.domain.models.Track
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class FavoriteViewModel(
     private val tracksDbInteractor: TracksDbInteractor,
     private val sharedPreferencesInteractor: SharedPreferencesInteractor,
+    private val navigationInteractor: NavigationInteractor,
 ) : ViewModel() {
 
     private val _tracks = MutableLiveData<List<Track>>(listOf())
@@ -38,6 +40,10 @@ class FavoriteViewModel(
     val event = SingleLiveEvent<FavoriteScreenEvent>()
 
     fun onTrackClick(track: Track) = clickDebounce(track)
+
+    fun showNavigation() {
+        navigationInteractor.setBottomNavigationVisibility(true)
+    }
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 100L

@@ -164,10 +164,6 @@ class PlyaerViewModel(
         event.postValue(PlayerScreenEvent.NavigateToCreatePlaylistScreen)
     }
 
-    fun showNavigation() {
-        navigationInteractor.setBottomNavigationVisibility(true)
-    }
-
     fun hideNavigation() {
         navigationInteractor.setBottomNavigationVisibility(false)
     }

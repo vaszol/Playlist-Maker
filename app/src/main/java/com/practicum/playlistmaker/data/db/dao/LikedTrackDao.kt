@@ -5,23 +5,20 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.practicum.playlistmaker.data.db.entity.TrackEntity
+import com.practicum.playlistmaker.data.db.entity.LikedTrackEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TrackDao {
+interface LikedTrackDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addTrack(track: TrackEntity)
+    suspend fun addTrack(track: LikedTrackEntity)
 
     @Delete
-    suspend fun deleteTrack(track: TrackEntity)
+    suspend fun deleteTrack(track: LikedTrackEntity)
 
     @Query("SELECT * FROM likedTracks ORDER BY created_date DESC")
-    fun getTracks(): Flow<List<TrackEntity>>
+    fun getTracks(): Flow<List<LikedTrackEntity>>
 
     @Query("SELECT trackId FROM likedTracks")
     fun getTracksIds(): List<String>
-
-    @Query("SELECT * FROM likedTracks WHERE trackId IN (:tracksIds)")
-    fun getTracksByIds(tracksIds: List<String>): Flow<List<TrackEntity>>
 }

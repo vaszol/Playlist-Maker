@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.domain.NavigationInteractor
 import com.practicum.playlistmaker.domain.api.SharedPreferencesInteractor
 import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.models.Track
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class SearchViewModel(
     private val trackInteractor: TrackInteractor,
     private val sharedPreferencesInteractor: SharedPreferencesInteractor,
+    private val navigationInteractor: NavigationInteractor,
 ) : ViewModel() {
 
     private val searchDebounce =
@@ -144,6 +146,10 @@ class SearchViewModel(
     }
 
     private fun getCurrentScreenState() = state.value ?: SearchScreenState()
+
+    fun showNavigation() {
+        navigationInteractor.setBottomNavigationVisibility(true)
+    }
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L

@@ -25,9 +25,9 @@ class PlaylistRepositoryImpl(
         val tracksIds = playlist.tracksIds.toMutableList()
         tracksIds.add(track.trackId)
         val newPlaylist =
-            playlist.copy(tracksIds = tracksIds, tracksCount = playlist.tracksCount + 1)
+            playlist.copy(tracksIds = tracksIds, tracksCount = tracksIds.size)
         appDatabase.playlistDao().updatePlaylist(playlistDbConvertor.mapToEntity(newPlaylist))
-        appDatabase.trackDao().addTrack(trackDbConvertor.mapToEntity(track))
+        appDatabase.playlistTrackDao().addTrack(trackDbConvertor.mapToPlaylistTrackEntity(track))
     }
 
     override fun getPlaylist(playlistId: String): Flow<Playlist?> {
@@ -37,9 +37,12 @@ class PlaylistRepositoryImpl(
     }
 
     override fun getTracksByIds(tracksIds: List<String>): Flow<List<Track>> {
-        return appDatabase.trackDao().getTracksByIds(tracksIds).map { entities ->
+        return appDatabase.playlistTrackDao().getTracksByIds(tracksIds).map { entities ->
             entities.sortedByDescending { it.createdAt }
-                .map { track -> trackDbConvertor.map(track) }
+                .map { track -> trackDbConvertor.mapFromPlaylistTrackEntity(track) }
         }
     }
+
+    override suspend fun deleteTrack(trackId: String) =
+        appDatabase.playlistTrackDao().deleteTrack(trackId)
 }

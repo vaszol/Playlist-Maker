@@ -7,6 +7,7 @@ import com.practicum.playlistmaker.domain.PlaylistRepository
 import com.practicum.playlistmaker.domain.models.Playlist
 import com.practicum.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import java.util.UUID
 
@@ -40,5 +41,29 @@ class PlaylistInteractorImpl(
 
     override fun getTracksByIds(tracksIds: List<String>): Flow<List<Track>> {
         return playlistRepository.getTracksByIds(tracksIds)
+    }
+
+    override suspend fun deleteTrackFromPlaylist(playlistId: String, trackId: String) {
+        playlistRepository.getPlaylist(playlistId)
+            .filterNotNull()
+            .collectLatest {
+                val playlist = it.copy(
+                    tracksIds = it.tracksIds.toMutableList().apply { remove(trackId) },
+                    tracksCount = it.tracksIds.size
+                )
+                playlistRepository.addPlaylist(playlist)
+                deleteNonPlaylistTrack(trackId)
+            }
+    }
+
+    private suspend fun deleteNonPlaylistTrack(trackId: String) {
+        playlistRepository.getPlaylistsFlow().collect {
+            val trackInPlaylists = it.filter { track ->
+                trackId in track.tracksIds.toSet()
+            }
+            if (trackInPlaylists.isEmpty()) {
+                playlistRepository.deleteTrack(trackId)
+            }
+        }
     }
 }
