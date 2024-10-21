@@ -66,4 +66,14 @@ class PlaylistInteractorImpl(
             }
         }
     }
+
+    override suspend fun deletePlaylist(playlistId: String) {
+        playlistRepository.getPlaylist(playlistId)
+            .collect { playlist ->
+                playlist?.let {
+                    playlistRepository.deletePlaylist(playlist)
+                    playlist.tracksIds.forEach { deleteNonPlaylistTrack(it) }
+                }
+            }
+    }
 }

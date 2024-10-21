@@ -35,12 +35,6 @@
     <string name="playlist_description">Описание</string>
     <string name="playlist_create_btn">Создать</string>
     <string name="playlist_image_description">обложка плейлиста</string>
-    <plurals name="track">
-        <item quantity="one">трек</item>
-        <item quantity="few">трека</item>
-        <item quantity="many">треков</item>
-        <item quantity="other">треков</item>
-    </plurals>
     <string name="playlist_created_snackbar">Плейлист %1$s создан</string>
     <string name="playlist_added">Добавлено в плейлист %1$s</string>
     <string name="playlist_already_added">Трек уже добавлен в плейлист %1$s</string>
@@ -52,8 +46,29 @@
     <string name="playlist_info_track_img_description">обложка плейлиста</string>
     <string name="playlist_info_share_img_description">Поделиться</string>
     <string name="playlist_info_menu_img_description">Меню</string>
-    <string name="playlist_info_dialog_title">Удалить трек</string>
-    <string name="playlist_info_dialog_message">Вы уверены, что хотите удалить трек из плейлиста?</string>
-    <string name="playlist_info_dialog_negative">Отмена</string>
-    <string name="playlist_info_dialog_positive">Удалить</string>
+    <string name="playlist_info_delete_track_dialog_title">Удалить трек</string>
+    <string name="playlist_info_delete_track_dialog_message">Вы уверены, что хотите удалить трек из плейлиста?</string>
+    <string name="playlist_info_delete_track_dialog_negative">Отмена</string>
+    <string name="playlist_info_delete_track_dialog_positive">Удалить</string>
+    <string name="playlist_Empty_message">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="playlist_menu_share">Поделиться</string>
+    <string name="playlist_menu_edit">Редактировать информацию</string>
+    <string name="playlist_menu_delete">Удалить плейлист</string>
+    <plurals name="track">
+        <item quantity="one">трек</item>
+        <item quantity="few">трека</item>
+        <item quantity="many">треков</item>
+        <item quantity="other">треков</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">минута</item>
+        <item quantity="few">минуты</item>
+        <item quantity="many">минут</item>
+        <item quantity="other">минут</item>
+    </plurals>
+    <string name="playlist_info_total">%1$s · %2$s</string>
+    <string name="playlist_info_delete_playlist_dialog_title">Удалить плейлист</string>
+    <string name="playlist_info_delete_playlist_dialog_message">Хотите удалить плейлист?</string>
+    <string name="playlist_info_delete_playlist_dialog_negative">Нет</string>
+    <string name="playlist_info_delete_playlist_dialog_positive">Да</string>
 </resources>

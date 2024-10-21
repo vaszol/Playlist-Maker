@@ -12,4 +12,5 @@ interface PlaylistInteractor {
     fun getPlaylistById(playlistId: String): Flow<Playlist>
     fun getTracksByIds(tracksIds: List<String>): Flow<List<Track>>
     suspend fun deleteTrackFromPlaylist(playlistId: String, trackId: String)
+    suspend fun deletePlaylist(playlistId: String)
 }

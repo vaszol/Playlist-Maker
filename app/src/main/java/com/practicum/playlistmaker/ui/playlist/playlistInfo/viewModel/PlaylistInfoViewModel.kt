@@ -16,8 +16,6 @@ import com.practicum.playlistmaker.ui.util.debounce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlaylistInfoViewModel(
     private val navigationInteractor: NavigationInteractor,
@@ -69,12 +67,6 @@ class PlaylistInfoViewModel(
                     .collectLatest {
                         _state.postValue(
                             getCurrentScreenState().copy(
-                                info = String.format(
-                                    "%s минут · %s треков",
-                                    SimpleDateFormat("mm", Locale.getDefault())
-                                        .format(it.sumOf { track: Track -> track.trackTimeMillis }),
-                                    it.size
-                                ),
                                 tracks = it
                             )
                         )
@@ -89,7 +81,7 @@ class PlaylistInfoViewModel(
 
     fun onLongClick(trackId: String) {
         trackIdForDeletion = trackId
-        event.value = PlaylistInfoScreenEvent.ShowBackConfirmationDialog
+        event.value = PlaylistInfoScreenEvent.ShowDeleteTrackConfirmationDialog
     }
 
     fun hideNavigation() {
@@ -108,6 +100,47 @@ class PlaylistInfoViewModel(
 
     fun onDeleteTrackDialogDismiss() {
         trackIdForDeletion = null
+    }
+
+    fun onShareButtonClicked() {
+        state.value?.playlist?.let { playlist ->
+            if (playlist.tracksIds.isEmpty())
+                event.postValue(PlaylistInfoScreenEvent.ShowEmptyPlaylistDialog)
+            else event.postValue(PlaylistInfoScreenEvent.SharePlaylist)
+        }
+    }
+
+    fun onMenuButtonClicked() {
+        event.postValue(PlaylistInfoScreenEvent.ShowMenu(true))
+    }
+
+    fun onBtnShareMenuClicked() {
+        event.postValue(PlaylistInfoScreenEvent.SharePlaylist)
+    }
+
+    fun onBtnEditMenuClicked() {
+//        event.postValue(PlaylistInfoScreenEvent.ShowMenu(false))
+    }
+
+    fun onBtnDeleteMenuClicked() {
+        event.postValue(PlaylistInfoScreenEvent.ShowDeletePlaylistConfirmationDialog)
+    }
+
+    fun onOverlayClicked() {
+        event.postValue(PlaylistInfoScreenEvent.ShowMenu(false))
+    }
+
+    fun onDeletePlaylistDialogDismiss() {
+        event.postValue(PlaylistInfoScreenEvent.ShowMenu(false))
+    }
+
+    fun onDeletePlaylistConfirmed() {
+        playlistId?.let {
+            viewModelScope.launch(Dispatchers.IO) {
+                playlistInteractor.deletePlaylist(it)
+            }
+        }
+        event.postValue(PlaylistInfoScreenEvent.NavigateBack)
     }
 
     companion object {
