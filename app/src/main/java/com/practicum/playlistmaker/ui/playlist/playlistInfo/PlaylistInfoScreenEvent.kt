@@ -8,4 +8,5 @@ sealed class PlaylistInfoScreenEvent {
     data class ShowMenu(val isVisibleMenu: Boolean) : PlaylistInfoScreenEvent()
     object SharePlaylist : PlaylistInfoScreenEvent()
     object ShowDeletePlaylistConfirmationDialog : PlaylistInfoScreenEvent()
+    data object OpenEditPlaylistScreen : PlaylistInfoScreenEvent()
 }

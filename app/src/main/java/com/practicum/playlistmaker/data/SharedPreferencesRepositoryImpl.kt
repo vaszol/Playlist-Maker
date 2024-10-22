@@ -16,7 +16,8 @@ class SharedPreferencesRepositoryImpl(
 ) : SharedPreferencesRepository {
 
     private var track: Track? = null
-    private var playlistId: String? = null
+    private var infoPlaylistId: String? = null
+    private var editPlaylistId: String? = null
 
     init {
         switchTheme(getThemePreferences())
@@ -79,13 +80,25 @@ class SharedPreferencesRepositoryImpl(
     }
 
     override fun setPlaylistToInfo(playlistId: String) {
-        this.playlistId = playlistId
+        this.infoPlaylistId = playlistId
     }
 
-    override fun getPlaylistToPlay(): String? {
-        return playlistId.let {
-            val currentId = playlistId
-            playlistId = null
+    override fun getPlaylistToInfo(): String? {
+        return infoPlaylistId.let {
+            val currentId = infoPlaylistId
+            infoPlaylistId = null
+            currentId
+        }
+    }
+
+    override fun setPlaylistToEdit(playlistId: String) {
+        this.editPlaylistId = playlistId
+    }
+
+    override fun getPlaylistToEdit(): String? {
+        return editPlaylistId.let {
+            val currentId = editPlaylistId
+            editPlaylistId = null
             currentId
         }
     }

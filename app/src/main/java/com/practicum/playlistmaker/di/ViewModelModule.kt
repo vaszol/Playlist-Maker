@@ -34,7 +34,7 @@ val ViewModelModule = module {
     }
 
     viewModel<CreateViewModel> {
-        CreateViewModel(get(), get())
+        CreateViewModel(get(), get(), get())
     }
 
     viewModel<MainViewModel> {

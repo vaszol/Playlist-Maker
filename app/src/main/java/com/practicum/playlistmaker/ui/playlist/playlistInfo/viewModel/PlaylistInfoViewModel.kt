@@ -1,7 +1,5 @@
 package com.practicum.playlistmaker.ui.playlist.playlistInfo.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.NavigationInteractor
@@ -14,23 +12,36 @@ import com.practicum.playlistmaker.ui.playlist.playlistInfo.PlaylistInfoScreenSt
 import com.practicum.playlistmaker.ui.search.SingleLiveEvent
 import com.practicum.playlistmaker.ui.util.debounce
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class PlaylistInfoViewModel(
     private val navigationInteractor: NavigationInteractor,
-    sharedPreferencesInteractor: SharedPreferencesInteractor,
+    private val sharedPreferencesInteractor: SharedPreferencesInteractor,
     private val playlistInteractor: PlaylistInteractor,
 ) : ViewModel() {
 
-    var playlistId: String? = sharedPreferencesInteractor.getPlaylistToPlay()
-    private val _state = MutableLiveData<PlaylistInfoScreenState>()
-    val state: LiveData<PlaylistInfoScreenState> = _state
+    private val _playlistId = MutableStateFlow<String?>(null)
+    val playlistId: StateFlow<String?> = _playlistId
+    private val _playlist = MutableStateFlow<Playlist?>(null)
+    val playlist: StateFlow<Playlist?> = _playlist
+    private val _tracks = MutableStateFlow<List<Track>>(listOf())
+    val tracks: StateFlow<List<Track>> = _tracks
+    private val _state = MutableStateFlow<PlaylistInfoScreenState?>(null)
+    val state: StateFlow<PlaylistInfoScreenState?> = _state
     val event = SingleLiveEvent<PlaylistInfoScreenEvent>()
     private var trackIdForDeletion: String? = null
 
     init {
         subscribeOnPlaylist()
+        subscribeOnState()
     }
 
     private val clickDebounce =
@@ -48,34 +59,38 @@ class PlaylistInfoViewModel(
 
     private fun subscribeOnPlaylist() {
         viewModelScope.launch(Dispatchers.IO) {
-            playlistId?.let {
-                playlistInteractor.getPlaylistById(playlistId!!)
-                    .collectLatest {
-                        _state.postValue(
-                            getCurrentScreenState().copy(playlist = it)
-                        )
-                        getPlaylistTracks(it)
+            _playlistId.emit(sharedPreferencesInteractor.getPlaylistToInfo())
+            playlistId.value?.let {
+                playlistInteractor.getPlaylistById(it).onEach { updatedPlaylist ->
+                    if (updatedPlaylist.tracksCount != playlist.value?.tracksCount) {
+                        getPlaylistTracks(updatedPlaylist.tracksIds)
                     }
+                    _playlist.update { updatedPlaylist }
+                }.launchIn(viewModelScope)
             }
         }
     }
 
-    private fun getPlaylistTracks(it: Playlist?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            it?.tracksIds?.let { tracksIds ->
-                playlistInteractor.getTracksByIds(tracksIds)
-                    .collectLatest {
-                        _state.postValue(
-                            getCurrentScreenState().copy(
-                                tracks = it
-                            )
-                        )
-                    }
-            }
-        }
+    private fun getPlaylistTracks(tracksIds: List<String>) {
+        playlistInteractor.getTracksByIds(tracksIds).onEach { newTracks ->
+            _tracks.update { newTracks }
+        }.launchIn(viewModelScope)
     }
 
-    private fun getCurrentScreenState() = _state.value ?: PlaylistInfoScreenState()
+    private fun subscribeOnState() {
+        combine(playlist, tracks) { playlist, tracks ->
+            val state = PlaylistInfoScreenState(
+                coverUri = playlist?.coverUri,
+                name = playlist?.name ?: "",
+                description = playlist?.description ?: "",
+                minute = SimpleDateFormat("mm", Locale.getDefault())
+                    .format(tracks.sumOf { track: Track -> track.trackTimeMillis }).toInt(),
+                tracksCount = tracks.count(),
+                tracks = tracks
+            )
+            _state.emit(state)
+        }.launchIn(viewModelScope)
+    }
 
     fun onTrackClick(track: Track) = clickDebounce(track)
 
@@ -89,13 +104,16 @@ class PlaylistInfoViewModel(
     }
 
     fun onDeleteTrackConfirmed() {
-        playlistId?.apply {
-            trackIdForDeletion?.let {
-                viewModelScope.launch(Dispatchers.IO) {
-                    playlistInteractor.deleteTrackFromPlaylist(this@apply, it)
-                }.invokeOnCompletion { trackIdForDeletion = null }
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistId.value.let { playlistId ->
+                trackIdForDeletion?.let { trackIdForDeletion ->
+                    playlistInteractor.deleteTrackFromPlaylist(
+                        playlistId.toString(),
+                        trackIdForDeletion
+                    )
+                }
             }
-        }
+        }.invokeOnCompletion { trackIdForDeletion = null }
     }
 
     fun onDeleteTrackDialogDismiss() {
@@ -103,7 +121,7 @@ class PlaylistInfoViewModel(
     }
 
     fun onShareButtonClicked() {
-        state.value?.playlist?.let { playlist ->
+        playlist.value?.let { playlist ->
             if (playlist.tracksIds.isEmpty())
                 event.postValue(PlaylistInfoScreenEvent.ShowEmptyPlaylistDialog)
             else event.postValue(PlaylistInfoScreenEvent.SharePlaylist)
@@ -119,7 +137,12 @@ class PlaylistInfoViewModel(
     }
 
     fun onBtnEditMenuClicked() {
-//        event.postValue(PlaylistInfoScreenEvent.ShowMenu(false))
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistId.collect {
+                sharedPreferencesInteractor.setPlaylistToEdit(it.toString())
+            }
+        }
+        event.value = PlaylistInfoScreenEvent.OpenEditPlaylistScreen
     }
 
     fun onBtnDeleteMenuClicked() {
@@ -135,7 +158,7 @@ class PlaylistInfoViewModel(
     }
 
     fun onDeletePlaylistConfirmed() {
-        playlistId?.let {
+        playlistId.value?.let {
             viewModelScope.launch(Dispatchers.IO) {
                 playlistInteractor.deletePlaylist(it)
             }

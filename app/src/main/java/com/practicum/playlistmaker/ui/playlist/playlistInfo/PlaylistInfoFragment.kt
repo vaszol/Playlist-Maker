@@ -10,15 +10,18 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistInfoBinding
-import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.ui.playlist.playlistInfo.viewModel.PlaylistInfoViewModel
 import com.practicum.playlistmaker.ui.search.TracksAdapter
 import com.practicum.playlistmaker.ui.setSource
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -54,8 +57,9 @@ class PlaylistInfoFragment : Fragment() {
                 state = BottomSheetBehavior.STATE_HIDDEN
                 addBottomSheetCallback(
                     object : BottomSheetBehavior.BottomSheetCallback() {
-                        override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        override fun onStateChanged(bottomSheetMenu: View, newState: Int) {
                             overlay.isVisible = newState != BottomSheetBehavior.STATE_HIDDEN
+                            bottomSheet.isVisible = newState == BottomSheetBehavior.STATE_HIDDEN
                         }
 
                         override fun onSlide(bottomSheet: View, slideOffset: Float) {}
@@ -63,29 +67,38 @@ class PlaylistInfoFragment : Fragment() {
                 )
             }
         }
-        viewModel.state.observe(viewLifecycleOwner) {
-            val minute =
-                SimpleDateFormat("mm", Locale.getDefault())
-                    .format(it.tracks.sumOf { track: Track -> track.trackTimeMillis })
-            val minuteText =
-                "$minute ${resources.getQuantityString(R.plurals.minute, minute.toInt())}"
-            val countText =
-                "${it.tracks.size} ${
-                    resources.getQuantityString(R.plurals.track, it.tracks.size)
-                }"
-            binding.apply {
-                it.playlist?.coverUri?.let { img -> trackImg.setSource(img) }
-                name.text = it.playlist?.name ?: "Best songs 2021"
-                total.text = getString(R.string.playlist_info_total, minuteText, countText)
-                it.playlist?.coverUri?.let { img -> trackImgMenu.setSource(img) }
-                nameMenu.text = it.playlist?.name ?: "Best songs 2021"
-                countMenu.text = countText
-                description.text = it.playlist?.description ?: "2022"
-                btnShareMenu.text = getString(R.string.playlist_menu_share)
-                btnEditMenu.text = getString(R.string.playlist_menu_edit)
-                btnDeleteMenu.text = getString(R.string.playlist_menu_delete)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { state ->
+                    state?.let {
+                        val minuteText =
+                            "${it.minute} ${
+                                resources.getQuantityString(
+                                    R.plurals.minute,
+                                    it.minute
+                                )
+                            }"
+                        val countText =
+                            "${it.tracks.size} ${
+                                resources.getQuantityString(R.plurals.track, it.tracks.size)
+                            }"
+                        binding.apply {
+                            it.coverUri?.let { it1 -> trackImg.setSource(it1) }
+                            it.coverUri?.let { it1 -> trackImgMenu.setSource(it1) }
+                            name.text = it.name
+                            nameMenu.text = it.name
+                            description.text = it.description
+                            total.text =
+                                getString(R.string.playlist_info_total, minuteText, countText)
+                            countMenu.text = countText
+                            btnShareMenu.text = getString(R.string.playlist_menu_share)
+                            btnEditMenu.text = getString(R.string.playlist_menu_edit)
+                            btnDeleteMenu.text = getString(R.string.playlist_menu_delete)
+                        }
+                        adapter.updateList(it.tracks)
+                    }
+                }
             }
-            adapter.updateList(it.tracks)
         }
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
@@ -96,6 +109,7 @@ class PlaylistInfoFragment : Fragment() {
                 PlaylistInfoScreenEvent.SharePlaylist -> sharePlaylist()
                 is PlaylistInfoScreenEvent.ShowMenu -> showMenu(it.isVisibleMenu)
                 PlaylistInfoScreenEvent.ShowDeletePlaylistConfirmationDialog -> showDeletePlaylistConfirmationDialog()
+                PlaylistInfoScreenEvent.OpenEditPlaylistScreen -> findNavController().navigate(R.id.action_playlistInfoFragment_to_createFragment)
             }
         }
         setupBackPressHandling()
@@ -104,7 +118,6 @@ class PlaylistInfoFragment : Fragment() {
     private fun showDeleteTrackConfirmationDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.playlist_info_delete_track_dialog_title)
-            .setMessage(R.string.playlist_info_delete_track_dialog_message)
             .setNegativeButton(R.string.playlist_info_delete_track_dialog_negative) { _, _ -> viewModel.onDeleteTrackDialogDismiss() }
             .setPositiveButton(R.string.playlist_info_delete_track_dialog_positive) { _, _ -> viewModel.onDeleteTrackConfirmed() }
             .show()
@@ -119,7 +132,7 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     private fun sharePlaylist() {
-        viewModel.state.value?.tracks?.let { tracks ->
+        viewModel.tracks.value.let { tracks ->
             val countText =
                 "${tracks.size} ${resources.getQuantityString(R.plurals.track, tracks.size)}"
             val infoText = tracks.mapIndexed { index, track ->
@@ -127,7 +140,7 @@ class PlaylistInfoFragment : Fragment() {
                     SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
                 "${index + 1}. ${track.artistName} - ${track.trackName} (${trackTime})"
             }.joinToString("\n")
-            viewModel.state.value?.playlist?.let { playlist ->
+            viewModel.playlist.value?.let { playlist ->
                 val message = "${playlist.name}\n${playlist.description}\n$countText\n$infoText"
                 Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
@@ -148,8 +161,12 @@ class PlaylistInfoFragment : Fragment() {
 
     private fun showDeletePlaylistConfirmationDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.playlist_info_delete_playlist_dialog_title)
-            .setMessage(R.string.playlist_info_delete_playlist_dialog_message)
+            .setTitle(
+                getString(
+                    R.string.playlist_info_delete_playlist_dialog_title,
+                    viewModel.playlist.value?.name
+                )
+            )
             .setNegativeButton(R.string.playlist_info_delete_playlist_dialog_negative) { _, _ -> viewModel.onDeletePlaylistDialogDismiss() }
             .setPositiveButton(R.string.playlist_info_delete_playlist_dialog_positive) { _, _ -> viewModel.onDeletePlaylistConfirmed() }
             .show()

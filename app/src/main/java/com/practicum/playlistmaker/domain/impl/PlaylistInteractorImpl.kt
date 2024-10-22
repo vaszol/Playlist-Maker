@@ -15,10 +15,10 @@ class PlaylistInteractorImpl(
     private val externalStorageRepository: ExternalStorageRepository,
     private val playlistRepository: PlaylistRepository,
 ) : PlaylistInteractor {
-    override suspend fun addPlayList(name: String, description: String?, value: Uri?) {
+    override suspend fun addPlayList(name: String, description: String?, uri: Uri?) {
         val id = UUID.randomUUID().toString()
-        val playlistCoverUri = value?.let {
-            externalStorageRepository.savePlaylistCover(id, value)
+        val playlistCoverUri = uri?.let {
+            externalStorageRepository.savePlaylistCover(id, uri)
         }
         val playlist = Playlist(
             id = id,
@@ -26,6 +26,20 @@ class PlaylistInteractorImpl(
             description = description,
             coverUri = playlistCoverUri
         )
+        playlistRepository.addPlaylist(playlist)
+    }
+
+    override suspend fun updatePlaylist(
+        playlist: Playlist,
+        name: String,
+        description: String?,
+        uri: Uri?
+    ) {
+        playlist.apply {
+            this.name = name
+            description?.let { this.description = it }
+            uri?.let { this.coverUri = externalStorageRepository.savePlaylistCover(this.id, uri) }
+        }
         playlistRepository.addPlaylist(playlist)
     }
 

@@ -39,7 +39,15 @@ class SharedPreferencesInteractorImpl(private val repo: SharedPreferencesReposit
         repo.setPlaylistToInfo(playlistId)
     }
 
-    override fun getPlaylistToPlay(): String? {
-        return repo.getPlaylistToPlay()
+    override fun getPlaylistToInfo(): String? {
+        return repo.getPlaylistToInfo()
+    }
+
+    override fun setPlaylistToEdit(playlistId: String) {
+        repo.setPlaylistToEdit(playlistId)
+    }
+
+    override fun getPlaylistToEdit(): String? {
+        return repo.getPlaylistToEdit()
     }
 }
