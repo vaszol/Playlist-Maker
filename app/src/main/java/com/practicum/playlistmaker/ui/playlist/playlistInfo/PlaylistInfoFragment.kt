@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.ui.playlist.playlistInfo
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -94,6 +95,13 @@ class PlaylistInfoFragment : Fragment() {
                             btnShareMenu.text = getString(R.string.playlist_menu_share)
                             btnEditMenu.text = getString(R.string.playlist_menu_edit)
                             btnDeleteMenu.text = getString(R.string.playlist_menu_delete)
+                            messageText.text = getString(R.string.playlist_Empty_text)
+                            messageImg.setImageResource(
+                                if (Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) R.drawable.ic_message_empty_dark
+                                else R.drawable.ic_message_empty
+                            )
+                            messageImg.isVisible = it.emptyTracks
+                            messageText.isVisible = it.emptyTracks
                         }
                         adapter.updateList(it.tracks)
                     }

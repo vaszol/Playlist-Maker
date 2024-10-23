@@ -86,6 +86,7 @@ class PlaylistInfoViewModel(
                 minute = SimpleDateFormat("mm", Locale.getDefault())
                     .format(tracks.sumOf { track: Track -> track.trackTimeMillis }).toInt(),
                 tracksCount = tracks.count(),
+                emptyTracks = playlist?.tracksIds?.isEmpty() ?: false,
                 tracks = tracks
             )
             _state.emit(state)
@@ -133,7 +134,12 @@ class PlaylistInfoViewModel(
     }
 
     fun onBtnShareMenuClicked() {
-        event.postValue(PlaylistInfoScreenEvent.SharePlaylist)
+        playlist.value?.let { playlist ->
+            if (playlist.tracksIds.isEmpty()) {
+                event.value = PlaylistInfoScreenEvent.ShowEmptyPlaylistDialog
+                event.value = PlaylistInfoScreenEvent.ShowMenu(false)
+            } else event.postValue(PlaylistInfoScreenEvent.SharePlaylist)
+        }
     }
 
     fun onBtnEditMenuClicked() {
@@ -146,7 +152,8 @@ class PlaylistInfoViewModel(
     }
 
     fun onBtnDeleteMenuClicked() {
-        event.postValue(PlaylistInfoScreenEvent.ShowDeletePlaylistConfirmationDialog)
+        event.value = PlaylistInfoScreenEvent.ShowMenu(false)
+        event.value = PlaylistInfoScreenEvent.ShowDeletePlaylistConfirmationDialog
     }
 
     fun onOverlayClicked() {

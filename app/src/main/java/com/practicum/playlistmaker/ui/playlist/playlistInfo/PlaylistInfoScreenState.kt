@@ -8,5 +8,6 @@ data class PlaylistInfoScreenState(
     val description: String,
     val tracksCount: Int,
     val minute: Int,
+    val emptyTracks: Boolean = false,
     val tracks: List<Track>
 )

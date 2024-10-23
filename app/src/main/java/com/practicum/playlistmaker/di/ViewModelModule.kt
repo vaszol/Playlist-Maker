@@ -2,7 +2,7 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.ui.main.MainViewModel
 import com.practicum.playlistmaker.ui.playlist.favorite.viewModel.FavoriteViewModel
-import com.practicum.playlistmaker.ui.player.PlyaerViewModel
+import com.practicum.playlistmaker.ui.player.viewModel.PlyaerViewModel
 import com.practicum.playlistmaker.ui.playlist.create.viewModel.CreateViewModel
 import com.practicum.playlistmaker.ui.playlist.playlist.viewModel.PlaylistViewModel
 import com.practicum.playlistmaker.ui.playlist.playlistInfo.viewModel.PlaylistInfoViewModel

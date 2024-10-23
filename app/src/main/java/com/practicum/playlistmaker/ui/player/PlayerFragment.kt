@@ -14,6 +14,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.ui.player.viewModel.PlyaerViewModel
 import com.practicum.playlistmaker.ui.setSource
 import com.practicum.playlistmaker.ui.util.ResultKeyHolder
 import org.koin.androidx.viewmodel.ext.android.viewModel

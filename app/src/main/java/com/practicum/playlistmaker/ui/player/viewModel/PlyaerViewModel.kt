@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui.player
+package com.practicum.playlistmaker.ui.player.viewModel
 
 import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
@@ -13,6 +13,8 @@ import com.practicum.playlistmaker.domain.db.TracksDbInteractor
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 import com.practicum.playlistmaker.domain.models.Playlist
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.ui.player.PlayerScreenEvent
+import com.practicum.playlistmaker.ui.player.PlayerScreenState
 import com.practicum.playlistmaker.ui.search.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

@@ -66,7 +66,8 @@ class CreateViewModel(
                     )
                 }
                 withContext(Dispatchers.Main) {
-                    event.value = CreateEvent.SetPlaylistCreatedResult(name)
+                    if (state.value?.playlist == null)
+                        event.value = CreateEvent.SetPlaylistCreatedResult(name)
                     navigateBack()
                 }
             }
@@ -74,11 +75,13 @@ class CreateViewModel(
     }
 
     fun onBackPressed() {
-        if (name.isNotEmpty() || !description.isNullOrEmpty() || playlistCoverUri.value != null) {
-            event.value = CreateEvent.ShowBackConfirmationDialog
-        } else {
+        if (state.value?.playlist == null) {
+            if (name.isNotEmpty() || !description.isNullOrEmpty() || playlistCoverUri.value != null)
+                event.value = CreateEvent.ShowBackConfirmationDialog
+            else
+                event.value = CreateEvent.NavigateBack
+        } else
             event.value = CreateEvent.NavigateBack
-        }
     }
 
     fun onBackPressedConfirmed() = navigateBack()
