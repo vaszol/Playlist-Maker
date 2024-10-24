@@ -6,7 +6,7 @@ import com.practicum.playlistmaker.data.PlaylistDbConvertor
 import com.practicum.playlistmaker.data.PlaylistRepositoryImpl
 import com.practicum.playlistmaker.data.SharedPreferencesRepositoryImpl
 import com.practicum.playlistmaker.data.TrackDbConvertor
-import com.practicum.playlistmaker.data.TrackDbRepositoryImpl
+import com.practicum.playlistmaker.data.LikedTrackRepositoryImpl
 import com.practicum.playlistmaker.data.TracksRepositoryImpl
 import com.practicum.playlistmaker.domain.ExternalStorageRepository
 import com.practicum.playlistmaker.domain.NavigationRepository
@@ -28,7 +28,7 @@ val RepositoryModule = module {
     }
 
     single<TrackDbRepository> {
-        TrackDbRepositoryImpl(get(), get())
+        LikedTrackRepositoryImpl(get(), get())
     }
 
     single<NavigationRepository> { NavigationRepositoryImpl() }

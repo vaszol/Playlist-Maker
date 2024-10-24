@@ -47,6 +47,7 @@ class PlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.showNavigation()
         viewModel.playlist.observe(viewLifecycleOwner) {
             playlistAdapter.submitList(it)
             binding.emptyGroup.isVisible = it.isEmpty()
@@ -56,6 +57,7 @@ class PlaylistFragment : Fragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 PlaylistsScreenEvent.NavigateToCreatePlaylist -> findNavController().navigate(R.id.action_mediaFragment_to_createFragment)
+                PlaylistsScreenEvent.NavigateToPlaylistInfo -> findNavController().navigate(R.id.action_mediaFragment_to_playlistInfoFragment)
             }
         }
     }

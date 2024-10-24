@@ -14,6 +14,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.domain.models.PlayerStateEnum
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.ui.player.viewModel.PlyaerViewModel
 import com.practicum.playlistmaker.ui.setSource
 import com.practicum.playlistmaker.ui.util.ResultKeyHolder
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -46,7 +47,7 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.hideNavigation()
         viewModel.setTrack()
-        viewModel.state.observe(this) {
+        viewModel.state.observe(viewLifecycleOwner) {
             it.track?.let(::setTrackData)
             binding.trackTime.text = it.trackTime.ifEmpty { "00:00" }
             it.playerState.let { playerStateEnum: PlayerStateEnum ->
@@ -80,8 +81,8 @@ class PlayerFragment : Fragment() {
             bottomAdapter = BottomAdapter(viewModel::onPlaylistClicked)
             playlists.adapter = bottomAdapter
         }
-        viewModel.playlists.observe(this) { bottomAdapter.submitList(it) }
-        viewModel.event.observe(this) { it ->
+        viewModel.playlists.observe(viewLifecycleOwner) { bottomAdapter.submitList(it) }
+        viewModel.event.observe(viewLifecycleOwner) { it ->
             when (it) {
                 is PlayerScreenEvent.OpenBottomSheet -> {
                     binding.bottomSheet.let {
@@ -106,7 +107,6 @@ class PlayerFragment : Fragment() {
                 }
 
                 is PlayerScreenEvent.NavigateToCreatePlaylistScreen -> {
-                    viewModel.hideNavigation()
                     findNavController().navigate(R.id.action_playerFragment_to_createFragment)
                 }
             }
@@ -118,7 +118,6 @@ class PlayerFragment : Fragment() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (isEnabled) {
-                    viewModel.showNavigation()
                     findNavController().popBackStack()
                 }
             }

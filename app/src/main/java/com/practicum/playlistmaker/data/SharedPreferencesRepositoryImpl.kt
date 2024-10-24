@@ -16,6 +16,8 @@ class SharedPreferencesRepositoryImpl(
 ) : SharedPreferencesRepository {
 
     private var track: Track? = null
+    private var infoPlaylistId: String? = null
+    private var editPlaylistId: String? = null
 
     init {
         switchTheme(getThemePreferences())
@@ -28,7 +30,7 @@ class SharedPreferencesRepositoryImpl(
             if (history.any { it.trackId == track.trackId }) {
                 history.removeIf { historyTrack -> historyTrack.trackId == track.trackId }
             } else {
-                while (history.size >= 10) history.removeFirst()
+                while (history.size >= 10) history.removeAt(0)
             }
         }
         history.add(track)
@@ -37,7 +39,7 @@ class SharedPreferencesRepositoryImpl(
     }
 
     override fun getFromHistory(): MutableList<Track> {
-        val likedIds = appDatabase.trackDao().getTracksIds().toSet()
+        val likedIds = appDatabase.likedTrackDao().getTracksIds().toSet()
         return sharedPreferences.getString(SEARCH_HISTORY, null)?.let {
             sharedPreferencesConverter.convertJsonToList(it)
                 .map { it.copy(isLiked = it.trackId in likedIds) }
@@ -75,6 +77,30 @@ class SharedPreferencesRepositoryImpl(
             }
         )
         sharedPreferences.edit { putBoolean(DARK_THEME_KEY, darkTheme) }
+    }
+
+    override fun setPlaylistToInfo(playlistId: String) {
+        this.infoPlaylistId = playlistId
+    }
+
+    override fun getPlaylistToInfo(): String? {
+        return infoPlaylistId.let {
+            val currentId = infoPlaylistId
+            infoPlaylistId = null
+            currentId
+        }
+    }
+
+    override fun setPlaylistToEdit(playlistId: String) {
+        this.editPlaylistId = playlistId
+    }
+
+    override fun getPlaylistToEdit(): String? {
+        return editPlaylistId.let {
+            val currentId = editPlaylistId
+            editPlaylistId = null
+            currentId
+        }
     }
 
     companion object {

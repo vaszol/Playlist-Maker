@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +17,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentCreateBinding
 import com.practicum.playlistmaker.ui.load
 import com.practicum.playlistmaker.ui.playlist.create.viewModel.CreateViewModel
+import com.practicum.playlistmaker.ui.setSource
 import com.practicum.playlistmaker.ui.util.ResultKeyHolder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,6 +41,7 @@ class CreateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.hideNavigation()
         binding.apply {
             createToolbar.setNavigationOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
             photoPicker.setOnClickListener {
@@ -65,6 +68,16 @@ class CreateFragment : Fragment() {
                         ResultKeyHolder.KEY_PLAYLIST_CREATED,
                         bundleOf(ResultKeyHolder.KEY_PLAYLIST_NAME to it.playlistName)
                     )
+                }
+            }
+        }
+        viewModel.state.observe(viewLifecycleOwner) {
+            binding.apply {
+                it.playlist?.let { playlist ->
+                    playlist.coverUri?.let { img -> photoPicker.setSource(img) }
+                    (name as TextView).text = playlist.name
+                    (description as TextView).text = playlist.description
+                    btnComplete.text = getString(R.string.playlist_edit_save)
                 }
             }
         }

@@ -2,9 +2,10 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.ui.main.MainViewModel
 import com.practicum.playlistmaker.ui.playlist.favorite.viewModel.FavoriteViewModel
-import com.practicum.playlistmaker.ui.player.PlyaerViewModel
+import com.practicum.playlistmaker.ui.player.viewModel.PlyaerViewModel
 import com.practicum.playlistmaker.ui.playlist.create.viewModel.CreateViewModel
 import com.practicum.playlistmaker.ui.playlist.playlist.viewModel.PlaylistViewModel
+import com.practicum.playlistmaker.ui.playlist.playlistInfo.viewModel.PlaylistInfoViewModel
 import com.practicum.playlistmaker.ui.search.viewModel.SearchViewModel
 import com.practicum.playlistmaker.ui.settings.viewModel.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -17,7 +18,7 @@ val ViewModelModule = module {
     }
 
     viewModel<SearchViewModel> {
-        SearchViewModel(get(), get())
+        SearchViewModel(get(), get(), get())
     }
 
     viewModel<SettingsViewModel> {
@@ -25,18 +26,22 @@ val ViewModelModule = module {
     }
 
     viewModel<FavoriteViewModel> {
-        FavoriteViewModel(get(), get())
+        FavoriteViewModel(get(), get(), get())
     }
 
     viewModel<PlaylistViewModel> {
-        PlaylistViewModel(get(), get())
+        PlaylistViewModel(get(), get(), get())
     }
 
     viewModel<CreateViewModel> {
-        CreateViewModel(get(), get())
+        CreateViewModel(get(), get(), get())
     }
 
     viewModel<MainViewModel> {
         MainViewModel(get())
+    }
+
+    viewModel<PlaylistInfoViewModel> {
+        PlaylistInfoViewModel(get(), get(), get())
     }
 }

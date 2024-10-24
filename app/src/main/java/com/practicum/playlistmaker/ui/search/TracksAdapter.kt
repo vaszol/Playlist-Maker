@@ -12,6 +12,7 @@ import java.util.Locale
 
 class TracksAdapter(
     private val clickListener: (track: Track) -> Unit,
+    private val longClickListener: ((trackId: String) -> Unit)? = null,
 ) : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
     private var model = emptyList<Track>()
     private lateinit var tracksBinding: TrackItemBinding
@@ -22,7 +23,15 @@ class TracksAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(model[position])
-        holder.itemView.setOnClickListener { clickListener(model[position]) }
+        holder.itemView.apply {
+            setOnClickListener { clickListener(model[position]) }
+            setOnLongClickListener {
+                longClickListener?.let { onLongClick ->
+                    onLongClick(model[position].trackId)
+                }
+                true
+            }
+        }
     }
 
     override fun getItemCount(): Int {

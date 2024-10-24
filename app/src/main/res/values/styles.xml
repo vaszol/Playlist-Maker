@@ -63,7 +63,7 @@
     <style name="SearchImageView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:backgroundTint">@color/gray_dark</item>
+        <item name="android:backgroundTint">@color/searchImage</item>
         <item name="android:layout_gravity">center</item>
     </style>
 

@@ -29,6 +29,7 @@ class FavoriteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.showNavigation()
         adapter = TracksAdapter(viewModel::onTrackClick)
         binding.apply {
             trackRecyclerView.adapter = adapter

@@ -19,7 +19,7 @@ class TracksRepositoryImpl(
 
         if (response.resultCode == 200) {
             val tracks = (response as TrackResponse).results.map { trackDbConvertor.map(it) }
-            val likedIds = appDatabase.trackDao().getTracksIds().toSet()
+            val likedIds = appDatabase.likedTrackDao().getTracksIds().toSet()
             emit(Resource.Success(tracks.map { it.copy(isLiked = it.trackId in likedIds) }))
         } else {
             emit(Resource.Error(response.resultCode.toString()))

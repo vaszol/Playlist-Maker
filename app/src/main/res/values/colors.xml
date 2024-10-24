@@ -19,4 +19,7 @@
     <color name="bottom_navigation_btn">#1A1B22</color>
     <color name="bg_bottom_sheet">#FFFFFF</color>
     <color name="bottom_sheet_add_btn">#E6E8EB</color>
+    <color name="playlist_info_bg">#E6E8EB</color>
+    <color name="playlist_info_text">#1A1B22</color>
+    <color name="searchImage">#818C99</color>
 </resources>

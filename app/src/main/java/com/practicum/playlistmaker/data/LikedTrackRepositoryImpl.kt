@@ -6,22 +6,22 @@ import com.practicum.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class TrackDbRepositoryImpl(
+class LikedTrackRepositoryImpl(
     private val appDatabase: AppDatabase,
     private val trackDbConvertor: TrackDbConvertor,
 ) : TrackDbRepository {
     override suspend fun addTrackToLiked(track: Track) {
-        appDatabase.trackDao()
-            .addTrack(trackDbConvertor.mapToEntity(track, System.currentTimeMillis()))
+        appDatabase.likedTrackDao()
+            .addTrack(trackDbConvertor.mapToLikedTrackEntity(track, System.currentTimeMillis()))
     }
 
     override suspend fun deleteTrackFromLiked(track: Track) {
-        appDatabase.trackDao().deleteTrack(trackDbConvertor.mapToEntity(track))
+        appDatabase.likedTrackDao().deleteTrack(trackDbConvertor.mapToLikedTrackEntity(track))
     }
 
     override suspend fun getLikedTracks(): Flow<List<Track>> {
-        return appDatabase.trackDao().getTracks().map { it ->
-            it.map { trackDbConvertor.map(it) }
+        return appDatabase.likedTrackDao().getTracks().map { it ->
+            it.map { trackDbConvertor.mapFromLikedTrackEntity(it) }
         }
     }
 }

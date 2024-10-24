@@ -16,4 +16,10 @@ interface SharedPreferencesRepository {
     fun getThemePreferences(): Boolean
 
     fun switchTheme(darkTheme: Boolean)
+
+    fun setPlaylistToInfo(playlistId: String)
+    fun getPlaylistToInfo(): String?
+
+    fun setPlaylistToEdit(playlistId: String)
+    fun getPlaylistToEdit(): String?
 }

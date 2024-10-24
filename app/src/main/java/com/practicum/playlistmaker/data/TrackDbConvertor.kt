@@ -1,15 +1,16 @@
 package com.practicum.playlistmaker.data
 
-import com.practicum.playlistmaker.data.db.entity.TrackEntity
+import com.practicum.playlistmaker.data.db.entity.LikedTrackEntity
+import com.practicum.playlistmaker.data.db.entity.PlaylistTrackEntity
 import com.practicum.playlistmaker.data.dto.TrackDto
 import com.practicum.playlistmaker.domain.models.Track
 
 class TrackDbConvertor {
-    fun mapToEntity(
+    fun mapToLikedTrackEntity(
         track: Track,
         createDate: Long = 0L
-    ): TrackEntity {
-        return TrackEntity(
+    ): LikedTrackEntity {
+        return LikedTrackEntity(
             track.trackId,
             track.trackName,
             track.artistName,
@@ -24,7 +25,42 @@ class TrackDbConvertor {
         )
     }
 
-    fun map(track: TrackEntity): Track {
+    fun mapFromLikedTrackEntity(track: LikedTrackEntity): Track {
+        return Track(
+            track.trackId,
+            track.trackName,
+            track.artistName,
+            track.trackTimeMillis,
+            track.artworkUrl100,
+            track.collectionName,
+            track.releaseDate,
+            track.primaryGenreName,
+            track.country,
+            track.previewUrl,
+            true
+        )
+    }
+
+    fun mapToPlaylistTrackEntity(
+        track: Track,
+        createDate: Long = 0L
+    ): PlaylistTrackEntity {
+        return PlaylistTrackEntity(
+            track.trackId,
+            track.trackName,
+            track.artistName,
+            track.trackTimeMillis,
+            track.artworkUrl100,
+            track.collectionName,
+            track.releaseDate,
+            track.primaryGenreName,
+            track.country,
+            track.previewUrl,
+            createDate,
+        )
+    }
+
+    fun mapFromPlaylistTrackEntity(track: PlaylistTrackEntity): Track {
         return Track(
             track.trackId,
             track.trackName,

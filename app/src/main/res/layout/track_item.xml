@@ -12,6 +12,7 @@
         android:id="@+id/track_img"
         android:layout_width="@dimen/size_45"
         android:layout_height="@dimen/size_45"
+        android:contentDescription="@string/track_img_description"
         android:src="@drawable/ic_music" />
 
     <LinearLayout
@@ -28,6 +29,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:fontFamily="@font/ys_display_regular"
+            android:maxLines="1"
             android:textColor="@color/trackTextPrime"
             android:textSize="@dimen/size_16"
             tools:ignore="SpUsage"
@@ -44,7 +46,7 @@
 
             <TextView
                 android:id="@+id/track_artist"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="end"
@@ -58,6 +60,7 @@
             <ImageView
                 android:layout_width="@dimen/size_13"
                 android:layout_height="@dimen/size_13"
+                android:contentDescription="@string/separator"
                 android:src="@drawable/ic_dot" />
 
             <TextView
@@ -77,6 +80,7 @@
         android:layout_width="@dimen/size_24"
         android:layout_height="@dimen/size_24"
         android:layout_marginVertical="@dimen/size_8"
+        android:contentDescription="@string/arrow"
         android:src="@drawable/track_arrow" />
 
 </LinearLayout>

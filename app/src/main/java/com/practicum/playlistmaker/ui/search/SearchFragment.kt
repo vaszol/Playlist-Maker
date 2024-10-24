@@ -34,9 +34,14 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.showNavigation()
         adapter = TracksAdapter(viewModel::onTrackClick)
         searchBinding.apply {
             trackRecyclerView.adapter = adapter
+            messageImg.setImageResource(
+                if (Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) R.drawable.ic_message_fail_dark
+                else R.drawable.ic_message_fail
+            )
             clearIcon.setOnClickListener { viewModel.clearText() }
             messageBtn.setOnClickListener { viewModel.search() }
             searchHistoryBtn.setOnClickListener { viewModel.clearHistory() }
@@ -66,7 +71,7 @@ class SearchFragment : Fragment() {
                 searchHistoryBtn.isVisible = it.searchHistoryVisible && it.tracks.isNotEmpty()
                 messageImg.isVisible = it.messageVisible
                 messageText.isVisible = it.messageVisible
-                messageBtn.isVisible = it.messageVisible
+                messageBtn.isVisible = it.messageVisible && it.messageFail
                 searchPgb.isVisible = it.searchPgbVisible
                 adapter.updateList(it.tracks)
                 trackRecyclerView.isVisible = it.tracks.isNotEmpty()
